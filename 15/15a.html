@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 350px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  {
+    question: "Μισέλ: Έλα; Υπάρχει κανείς σπίτι;",
+    answer: "Michelle: Hello? Anyone home?"
+  },
+  {
+    question: "Σάντρα: Ω, είναι υπέροχο να σε βλέπω!",
+    answer: "Sandra: Oh, it's great to see you!"
+  },
+  {
+    question: "Μισέλ: Γεια! Φαίνεσαι υπέροχη!",
+    answer: "Michelle: Hi! You look great!"
+  },
+  {
+    question: "Σάντρα: Ευχαριστώ. Εσύ επίσης, Μισέλ—φαίνεσαι καλά.",
+    answer: "Sandra: Thank you. You too, Michelle—you’ve come well yourself."
+  },
+  {
+    question: "Μισέλ: Και αυτό το σπίτι... είναι τόσο ακατάστατο και γεμάτο σκόνη!",
+    answer: "Michelle: And this house... it's so untidy and so dusty!"
+  },
+  {
+    question: "Σάντρα: Ξέρω. Ας καθαρίσουμε καλά αυτό το μέρος—οι άλλοι θα έρθουν σε λίγο. Ας ξεκινήσουμε αμέσως.",
+    answer: "Sandra: I know. Let's give this place a good clean—the others will be here in a minute. Let's get started straight away."
+  },
+  {
+    question: "Μισέλ: Σωστά! Πριν το καταλάβεις, θα έχουμε καθαρίσει και τακτοποιήσει τα πάντα.",
+    answer: "Michelle: Right! Before you know it, we'll have cleaned and tidied everything."
+  },
+  {
+    question: "Πάουλο: Δεν έχεις αλλάξει—καθάρισμα, ξεσκόνισμα, τακτοποίηση... ακριβώς όπως στο πανεπιστήμιο. Δεν μπορείς να σκεφτείς κάτι άλλο;",
+    answer: "Paulo: You haven't changed then—cleaning, dusting, tidying... it's just like when we were at university. Can't you think of anything else?"
+  },
+  {
+    question: "Σάντρα: Κοίτα ποιος μιλάει—πάντα παίζεις κιθάρα! Έλα, Πάουλο, μη γίνεσαι τεμπέλης.",
+    answer: "Sandra: Look who's talking—always strumming away on your guitar! Come on, Paulo, don't be lazy."
+  },
+  {
+    question: "Πάουλο (αναστενάζοντας): Ω, καλά, ας ξεκινήσουμε λοιπόν...",
+    answer: "Paulo (groaning): Oh, come on, let’s get started then..."
+  },
+  {
+    question: "[Η πόρτα ανοίγει. Φτάνουν περισσότεροι φίλοι.]",
+    answer: "[Door opens. More friends arrive.]"
+  },
+  {
+    question: "Τζο: Σαν τις ακτίνες του τριαντάφυλλου! Είστε όλοι υπέροχοι—μαζί εδώ όπως τα παλιά.",
+    answer: "Joe: As the rays of rose! You're all wonderful—altogether here just like the old days."
+  },
+  {
+    question: "Σάντρα: Εντάξει παιδιά—τι θα κάνουμε;",
+    answer: "Sandra: Okay, guys—what shall we do?"
+  },
+  {
+    question: "Μισέλ: Θέλω να διασκεδάσουμε πολύ!",
+    answer: "Michelle: I want to have lots of fun!"
+  },
+  {
+    question: "Τζο: Κι εγώ επίσης!",
+    answer: "Joe: So do I!"
+  },
+  {
+    question: "Μισέλ: Έλα, Τζο, ας πάμε μια μεγάλη βόλτα—όλο το δρόμο μέχρι τη λίμνη.",
+    answer: "Michelle: Come on, Joe, let’s go for a long walk—all the way down to the lake."
+  },
+  {
+    question: "Σάντρα: Σταμάτα εκεί που είσαι! Πού πάτε εσείς οι δύο;!",
+    answer: "Sandra: Stop where you are! Where are you two going?!"
+  },
+  {
+    question: "Έλα, Πάουλο—πιάσε πάλι αυτή τη βούρτσα! Και Μισέλ, παρακαλώ πάρε τη τσάντα σου... και αυτό το φρικτό καπέλο.",
+    answer: "Come on, Paulo—pick up that brush again! And Michelle, please pick up your bag... and that frightful hat."
+  },
+  {
+    question: "Τζο (χαιρετώντας): Υπακούω, καπετάνιε!",
+    answer: "Joe (saluting): Aye aye, captain!"
+  },
+  {
+    question: "Σάντρα: Έλα, Μισέλ, σταμάτα να παίζεις και δώσε μας ένα χέρι.",
+    answer: "Sandra: Come on, Michelle, stop playing around and give us a hand."
+  },
+  {
+    question: "Πάουλο: Ω όχι... αυτό το απορρυπαντικό το φτιάχνει η Cindex, η αμερικανική πολυεθνική εταιρεία που φτιάχνει προϊόντα καθαρισμού. Αρνούμαι να χρησιμοποιήσω αυτό το προϊόν. Ξέρεις ότι μισώ τις πολυεθνικές.",
+    answer: "Paulo: Oh no... this detergent is made by Cindex, the American multinational company that makes household cleaning products. I refuse to use this product. You know I hate multinationals."
+  },
+  {
+    question: "Σάντρα: Αλλά είναι απλώς απορρυπαντικό! Όλα τα απορρυπαντικά τα φτιάχνουν πολυεθνικές. Πώς θα καθαρίσεις το σπίτι αν αρνείσαι να τα χρησιμοποιήσεις;",
+    answer: "Sandra: But it’s just detergent! All detergents are made by multinationals. How are you supposed to clean a house if you refuse to use them?"
+  },
+  {
+    question: "Πάουλο: Μάντεψες σωστά—ποτέ δεν κάνω καθάρισμα. Οι συγκάτοικοί μου το φροντίζουν.",
+    answer: "Paulo: You guessed right—I never do any cleaning. My flatmates look after that."
+  },
+  {
+    question: "Μισέλ: Κατάλαβα... άρα οργανώνεις να καθαρίζουν το σπίτι σου για σένα. Είσαι όπως ο Πάουλο τότε. Τι μπάχαλο είναι αυτό εδώ! Αν δεν ήμασταν εμείς...",
+    answer: "Michelle: I see... so you arrange to have your flat cleaned for you. You’re just like Paulo then. What a mess this house is in! If it weren’t for us..."
+  },
+  {
+    question: "Πάουλο: Αν δεν ήσασταν εσείς, θα χαλάρωνα παίζοντας την κιθάρα μου.",
+    answer: "Paulo: If it weren’t for you, I’d be chilling, playing my guitar."
+  },
+  {
+    question: "Μισέλ: Καμία ψεύτικη εξυπνάδα, Πάουλο!",
+    answer: "Michelle: None of your false cleverness, Paulo!"
+  },
+  {
+    question: "Τζο: Κατάλαβα... περνάμε τις περισσότερες διακοπές μας καθαρίζοντας! Αρχίζω να αναρωτιέμαι αν αυτές οι διακοπές ήταν λάθος...",
+    answer: "Joe: I see... we’re spending most of our holiday cleaning! I’m starting to wonder if this holiday might have been a mistake..."
+  },
+  {
+    question: "Σάντρα: Έλα, Πάουλο, σταμάτα τις παραπονούνες. Θα χαρείς να δεις αυτό το μέρος πεντακάθαρο!",
+    answer: "Sandra: Come on, Paulo, stop complaining. You’ll be happy to see this place all spick-and-span!"
+  },
+  {
+    question: "Πάουλο: Σάντρα, το έχω ήδη ξεσκονίσει!",
+    answer: "Paulo: Sandra, I’ve already dusted that!"
+  },
+  {
+    question: "Σάντρα: Αλήθεια; Είσαι σίγουρος ότι το καθάρισες σωστά; Γιατί δεν φαίνεται πολύ καθαρό σε μένα.",
+    answer: "Sandra: Oh really? Are you sure you cleaned it properly? Because it doesn’t look very clean to me."
+  },
+  {
+    question: "Τζο: Τι γίνεται εδώ; Είστε οι παλιοί μου φίλοι από το κολέγιο ή εργαζόμενοι από εταιρεία καθαρισμού;",
+    answer: "Joe: What’s going on here? Are you my old college friends—or workers from a cleaning company?"
+  },
+  {
+    question: "Μισέλ: Έλα, βάλε τις σκούπες και τα απορρυπαντικά στην άκρη. Ας κάνουμε μια πρόποση για τα παλιά καλά χρόνια!",
+    answer: "Michelle: Come on, put away those brooms and detergents. Let’s toast to the good old days!"
+  },
+  {
+    question: "Σάντρα: Αλλά η Σάρα δεν ήρθε ακόμα. Αυτό είναι παράξενο—έπρεπε να είναι εδώ μέχρι τώρα. Είπε ότι θα ερχόταν αμέσως μετά το μεσημεριανό.",
+    answer: "Sandra: But Sarah's not here yet. That’s odd—she should be here by now. She said she’d be here just after lunch."
+  },
+  {
+    question: "Μισέλ: Σωστά. Και αυτή ήταν που οργάνωσε αυτό το reunion, κάνω λάθος;",
+    answer: "Michelle: That’s right. And she’s the one who organized this reunion, am I wrong?"
+  },
+  {
+    question: "Σάρα (μπαίνοντας): Μιλάτε για μένα;",
+    answer: "Sarah (entering): Are you talking about me?"
+  },
+  {
+    question: "Όλοι: Ωχ!",
+    answer: "All: Oh!"
+  },
+    {
+    question: "Σάρα: Μη σηκώνεστε!",
+    answer: "Sarah: Don’t get up!"
+  },
+  {
+    question: "Σάντρα: Λοιπόν, όλοι έτοιμοι για την πρόποση;",
+    answer: "Sandra: So, everybody ready for the toast?"
+  },
+  {
+    question: "Πάουλο: Στην πραγματικότητα, είμαι πολύ κουρασμένος. Πρέπει να ξαπλώσω...",
+    answer: "Paulo: Actually, I’m really tired. I need to lie down..."
+  },
+  {
+    question: "Μισέλ: Ω, Σάρα, μη χαλάς τη διασκέδαση—σε περιμέναμε!",
+    answer: "Michelle: Oh, Sarah, don’t be a spoilsport—we’ve been waiting for you!"
+  },
+  {
+    question: "Πάουλο: Έλα, τεμπέλη!",
+    answer: "Paulo: Come on, lazy!"
+  },
+  {
+    question: "Τζο (φλερτάροντας): Ουάου... φαίνεσαι πιο όμορφη από ποτέ.",
+    answer: "Joe (flirting): Wow... looking more beautiful than ever."
+  },
+  {
+    question: "Μισέλ (κοροϊδευτικά): Μη μου πεις—σκέφτεσαι ακόμα εκείνη;",
+    answer: "Michelle (teasing): Don’t tell me—you still think about her?"
+  },
+  {
+    question: "Τζο (χαμογελώντας): Λοιπόν—προτείνω μια πρόποση.",
+    answer: "Joe (grinning): So—I propose a toast."
+  },
+  {
+    question: "Όλοι: Ναι!",
+    answer: "All: Yeah!"
+  },
+  {
+    question: "Τζο: Στις μέρες μας στο κολέγιο μαζί!",
+    answer: "Joe: To our college days together!"
+  },
+  {
+    question: "Όλοι: Ναι! Και σε αυτές τις υπέροχες διακοπές!",
+    answer: "All: Yes! And to this wonderful holiday!"
+  }
+];
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 50vw;
+      height: 40vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  {
+    question: "Γεια σου Έρικ, και καλησπέρα σε όλους τους φίλους των σπορ μας.",
+    answer: "Hello Eric, and good afternoon to all our sports fans."
+  },
+  {
+    question: "Λοιπόν, Τζον, για ποια σπορ θα μας μιλήσεις σήμερα;",
+    answer: "Well John, which sports are you going to talk about today?"
+  },
+  {
+    question: "Θα ήθελα να μιλήσω για το σούμο.",
+    answer: "I'd like to talk about sumo."
+  },
+  {
+    question: "Ενδιαφέρον, οφείλω να πω. Ξέρω κάτι για τις πολεμικές τέχνες — καράτε και τζούντο — αλλά για το σούμο σχεδόν τίποτα. Αυτοί οι τεράστιοι τύποι, τα παράξενα κουρέματά τους, τα πολύχρωμα και μάλλον ασυνήθιστα ρούχα τους... πες μας λοιπόν περισσότερα.",
+    answer: "Interesting, I must say. I know something about the martial arts—karate and judo—but sumo, I know almost nothing. Those enormous guys, their unusual hairstyles, their colorful and rather unusual clothes... so please, tell us more."
+  },
+  {
+    question: "Λοιπόν, Έρικ, ξέρεις ότι το σούμο είναι κι αυτό πολεμική τέχνη — και είναι το παραδοσιακό εθνικό άθλημα της Ιαπωνίας. Στην πραγματικότητα, είναι ένα από τα αρχαιότερα αθλήματα στον κόσμο. Αναφέρθηκε πρώτη φορά σε ένα ιαπωνικό βιβλίο πριν από περισσότερα από χίλια χρόνια, αλλά οι ειδικοί πιστεύουν ότι μπορεί να είναι πολύ παλιότερο.",
+    answer: "Well Eric, you know sumo is a martial art too—and it's Japan's traditional national sport. In fact, it's one of the world's oldest sports. It was first mentioned in a Japanese book more than a thousand years ago, but experts believe it might be much older."
+  },
+  {
+    question: "Αλήθεια; Πάνω από χίλια χρόνια;",
+    answer: "Really? More than a thousand years old?"
+  },
+  {
+    question: "Ναι, και ξέρεις, υπάρχουν και αρχαίες τοιχογραφίες που δείχνουν το άθλημα. Οι αρχαιολόγοι πιστεύουν ότι ο προϊστορικός άνθρωπος μπορεί να έκανε σούμο σαν μορφή προσευχής προς τους θεούς για καλή σοδειά.",
+    answer: "Yes, and you know, there are also ancient wall paintings showing the sport. Archaeologists think prehistoric man may have done sumo as a form of prayer to the gods for a good harvest."
+  },
+  {
+    question: "Νομίζω ότι οι περισσότεροι άνθρωποι στη Δύση βλέπουν αυτούς τους τεράστιους παλαιστές χωρίς να εκτιμούν αυτές τις αρχαίες παραδόσεις.",
+    answer: "I think most people in the West watch these enormous wrestlers without appreciating these ancient traditions."
+  },
+  {
+    question: "Έχεις δίκιο, Έρικ. Το σούμο δεν είναι απλώς ένα άθλημα — είναι περισσότερο ένας τρόπος ζωής, και έχει παίξει σημαντικό ρόλο στην πολιτιστική και θρησκευτική ιστορία της Ιαπωνίας. Στην Ιαπωνία, οι επιτυχημένοι παλαιστές σούμο θεωρούνται πρότυπα και ήρωες από πολλούς ανθρώπους.",
+    answer: "That's right, Eric. Sumo isn't just a sport—it's more a way of life, and it's played an important role in Japan's cultural and religious history. In Japan, successful sumo wrestlers are looked up to as role models and heroes by many people."
+  },
+  {
+    question: "Πώς λειτουργεί ένας αγώνας σούμο;",
+    answer: "How does a sumo match work?"
+  },
+  {
+    question: "Δύο άνδρες συναντιούνται σε έναν κύκλο που έχει περίπου τέσσερα και μισό μέτρα διάμετρο. Σκοπός του παιχνιδιού είναι να αναγκάσεις τον αντίπαλό σου να βγει έξω από τον κύκλο ή να κάνει ένα μέρος του σώματός του — εκτός από τις πατούσες — να αγγίξει το έδαφος. Ένας αγώνας μπορεί να διαρκέσει μερικά δευτερόλεπτα ή έως τρία λεπτά. Οι παλαιστές σούμο είναι πολύ μεγάλοι, αλλά μπορούν να κινηθούν πολύ γρήγορα.",
+    answer: "Two men meet in a ring that is about four and a half meters across. The aim of the game is to force your opponent out of the ring or make a part of his body—apart from the soles of his feet—touch the floor. A bout can last just a few seconds or as long as three minutes. Sumo wrestlers are very big, but they can move very quickly."
+  },
+  {
+    question: "Νομίζεις ότι θα μπορούσα να γίνω παλαιστής σούμο;",
+    answer: "Do you think I could be a sumo wrestler?"
+  },
+  {
+    question: "Λοιπόν, αν βάλεις 100 κιλά, ίσως ναι!",
+    answer: "Well, if you put on 100 kilos, maybe yes!"
+  },
+  {
+    question: "Οι παλαιστές σούμο ξεκινούν την εκπαίδευσή τους όταν είναι μικρά αγόρια. Αν δείξουν ταλέντο, πάνε να ζήσουν σε ένα παραδοσιακό ιαπωνικό σπίτι που λέγεται σταύλος σούμο. Τα μικρά αγόρια προπονούνται πολύ και φροντίζουν τους μεγαλύτερους παλαιστές. Ετοιμάζουν το φαγητό τους και καθαρίζουν τα δωμάτιά τους. Όλοι στον σταύλο τρώνε πολύ — τρώνε πολλά noodles, ρύζι, ψάρι και κοτόπουλο. Το παραδοσιακό πιάτο λέγεται chanko nabe, και φτιάχνεται με ψάρι, κρέας και λαχανικά. Οι παλαιστές τρώνε αυτό με πολύ ρύζι και πίνουν πολύ μπύρα επίσης. Μετά πάνε για ύπνο.",
+    answer: "Sumo wrestlers start their training when they're young boys. If they show promise, they go to live in a traditional Japanese house called a sumo stable. The young boys train a lot and look after the older wrestlers. They prepare their food and clean their rooms for them. Everyone in the sumo stable eats a lot—they eat lots of noodles, rice, fish, and chicken. The traditional dish is called chanko nabe, and it's made with fish, meat, and vegetables. The wrestlers eat this with lots of rice and they drink lots of beer too. Then they go to sleep."
+  },
+  {
+    question: "Άρα έτσι βάζουν τόσο βάρος;",
+    answer: "So that's how they put on so much weight?"
+  },
+  {
+    question: "Ναι. Το μυστικό είναι να τρως πολύ και μετά να κοιμάσαι — αυτό βοηθά τους παλαιστές να βάζουν βάρος.",
+    answer: "Yes. The secret is to eat a lot and then sleep—this helps the wrestlers put on weight."
+  },
+  {
+    question: "Και τα κουρέματα των παλαιστών; Από πού προέρχονται;",
+    answer: "And the wrestlers’ hairstyles? Where do they come from?"
+  },
+  {
+    question: "Καλή ερώτηση, Έρικ. Υπάρχουν πολλά διαφορετικά επίπεδα για τους παλαιστές σούμο. Οι καλύτεροι παλαιστές είναι στην κορυφαία βαθμίδα. Το στυλ του μαλλιού ενός παλαιστή εξαρτάται από τη βαθμίδα του. Όλα τα κουρέματα προέρχονται από τις παραδόσεις των σαμουράι — οι σαμουράι ήταν παραδοσιακοί στρατιώτες στην Ιαπωνία.",
+    answer: "Good question, Eric. There are lots of different ranks for sumo wrestlers. The best wrestlers are in the top rank. The style of a wrestler's hair depends on his rank. All the hairstyles come from samurai traditions—samurai were traditional soldiers in Japan."
+  },
+  {
+    question: "Ενδιαφέρον. Φαντάζομαι είναι δύσκολο για έναν παλαιστή σούμο να βρει κοπέλα.",
+    answer: "Interesting. I guess it's difficult for a sumo wrestler to find a girlfriend."
+  },
+  {
+    question: "Στην πραγματικότητα, δεν είναι τόσο δύσκολο, Έρικ. Οι επιτυχημένοι παλαιστές συνήθως βγαίνουν με όμορφες μοντέλα ή τραγουδίστριες ποπ.",
+    answer: "Actually, it's not that difficult, Eric. Successful wrestlers usually go out with beautiful models or pop singers."
+  },
+  {
+    question: "Χμμ. Πού μπορεί κανείς να δει τουρνουά στην Ιαπωνία;",
+    answer: "Hmm. Where can you see tournaments in Japan?"
+  },
+  {
+    question: "Υπάρχουν έξι μεγάλα τουρνουά σούμο, που λέγονται basho, κάθε χρόνο. Γίνονται σε μονά μήνες, όπως ο Μάρτιος ή ο Ιούλιος. Τα basho γίνονται στο Τόκιο, το Οσάκα, τη Ναγκόγια και τη Φουκουόκα.",
+    answer: "There are six grand sumo tournaments, called basho, every year. They take place during odd-numbered months like March or July. The basho take place in Tokyo, Osaka, Nagoya, and Fukuoka."
+  },
+  {
+    question: "Ευχαριστούμε, Τζον, για την ενδιαφέρουσα εξήγηση αυτού του μάλλον μυστηριώδους αθλήματος. Μάθαμε πολλά για το σούμο. Ευχαριστούμε, Τζον.",
+    answer: "Thanks, John, for our fascinating explanation of this rather mystifying sport. We've found out a lot about sumo. Thanks, John."
+  }
+]
+;
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>

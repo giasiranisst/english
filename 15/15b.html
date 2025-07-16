@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 50vw;
+      height: 40vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  {
+    question: "Θα ήθελα να ξεκινήσουμε τη συζήτησή μας απόψε με κάποιες προσωπικές ερωτήσεις: Πόσο χρονών είστε; Είστε κοντά στη συνταξιοδότηση; Έχετε ήδη συνταξιοδοτηθεί; Ίσως η εργασιακή σας ζωή είναι μπροστά σας. Πάντως, ένα πράγμα είναι σίγουρο — το νόημα της λέξης «συνταξιοδότηση» θα αλλάξει στο μέλλον. Ας μιλήσουμε γι’ αυτό με τον Τομ και τη Μαρί.",
+    answer: "I'd like to start our discussion this evening with some personal questions: How old are you? Are you nearing retirement? Are you already retired? Perhaps you have your working life ahead of you. Anyway, one thing is for sure—the meaning of the word retirement is going to change in the future. Let's talk about this with Tom and Marie."
+  },
+  {
+    question: "Έχεις δίκιο, Έρικ. Ο παραδοσιακός διαχωρισμός της ζωής σε τρεις κύκλους — εκπαίδευση, εργασία και συνταξιοδότηση — πρέπει να αλλάξει. Οι άνθρωποι στις ανεπτυγμένες χώρες ζουν περισσότερο. Μέχρι το 2025, στις ανεπτυγμένες χώρες, το ποσοστό του πληθυσμού άνω των 60 ετών θα έχει φτάσει το 26%. Όλοι αυτοί οι συνταξιούχοι θα έχουν σίγουρα μεγάλη επιρροή.",
+    answer: "You're right, Eric. The traditional division of life into three cycles—education, employment, and retirement—must change. People in developed countries are living longer. By 2025, in developed countries, the share of the population over 60 will have reached 26%. All these pensioners will certainly wield a lot of power."
+  },
+  {
+    question: "Θα έχουν, Έρικ. Αλλά ξέρεις, οι ειδικοί αρχίζουν να μιλούν για την έννοια της ενεργούς γήρανσης. Σκέψου ότι μέχρι το 2050, το μέσο προσδόκιμο ζωής στις ανεπτυγμένες χώρες θα είναι στα μέσα των 80. Αυτή η αυξανόμενη μακροζωία ήδη αρχίζει να έχει αρνητική επίδραση στα δημόσια οικονομικά, την οικονομική ανάπτυξη και τα γενικά επίπεδα διαβίωσης.",
+    answer: "They will, Eric. But you know, experts are beginning to talk about the concept of active aging. Just think that by 2050, the average lifespan in developed countries will be in the mid-80s. This increasing longevity is already starting to have a negative impact on public finances, economic growth, and general living standards."
+  },
+  {
+    question: "Το πρόβλημα είναι ότι υπάρχει αυξανόμενη πίεση στα συστήματα κοινωνικής ασφάλισης και στα δημόσια κονδύλια για τα έξοδα συνταξιοδότησης και υγειονομικής περίθαλψης. Οι οικονομολόγοι αμφισβητούν όλο και περισσότερο τη βιωσιμότητα του ευρωπαϊκού κοινωνικού μοντέλου, με τα υψηλά του πρότυπα κοινωνικής πρόνοιας.",
+    answer: "The problem is that there is increasing pressure on social security systems and public funds for retirement and healthcare expenses. Economists are increasingly questioning the sustainability of the European social model, with its high welfare standards."
+  },
+  {
+    question: "Πώς μπορούμε λοιπόν να λύσουμε αυτό το πρόβλημα;",
+    answer: "So how can we solve this problem?"
+  },
+  {
+    question: "Λοιπόν, οι κυβερνήσεις πρέπει πραγματικά να ενθαρρύνουν τους ηλικιωμένους να συνεχίσουν να εργάζονται.",
+    answer: "Well, governments really must encourage older people to continue working."
+  },
+  {
+    question: "Περίμενε λίγο, Μαρί. Συγγνώμη που διακόπτω, αλλά πραγματικά λες ότι θα πρέπει να δουλεύω μέχρι τα 95;",
+    answer: "There! Just a minute, Marie. Sorry to interrupt, but are you really saying that I will have to work until I'm 95?!"
+  },
+  {
+    question: "Λοιπόν, όχι μέχρι τα 95 ίσως. Αλλά όπως έλεγα, πρέπει να υπάρχουν προγράμματα δια βίου μάθησης για να βοηθούν τους ανθρώπους να μαθαίνουν ενημερωμένες δεξιότητες εργασίας καθώς μεγαλώνουν. Όσοι πλησιάζουν στη συνταξιοδότηση θα πρέπει να σχεδιάζουν μπροστά και να βρουν κάποιο τρόπο εργασίας — ίσως μερικής απασχόλησης.",
+    answer: "Well, not until 95 perhaps. But as I was saying, there should be programs for lifelong learning to help people learn up-to-date job skills as they get older. People about to retire should plan ahead and find some way of working—maybe a part-time job."
+  },
+  {
+    question: "Κάποιες αμερικανικές εταιρείες έχουν ήδη προγράμματα σταδιακής συνταξιοδότησης. Πώς λειτουργούν;",
+    answer: "Well, some American companies already have phased retirement programs. How do they work?"
+  },
+  {
+    question: "Οι συνταξιούχοι υπάλληλοι μπαίνουν στην ιστοσελίδα της εταιρείας, όπου μπορούν να βρουν έργα για την εταιρεία. Αυτό μπορεί να διαρκέσει δύο μέρες ή δύο μήνες. Οι συνταξιούχοι μπορούν να διαχειρίζονται τον χρόνο τους και να εργάζονται πότε και όπου θέλουν. Αν χρειαστούν κάποια εκπαίδευση για να κάνουν τη δουλειά, μπορούν να μπουν στην ιστοσελίδα και να κάνουν ένα σύντομο διαδικτυακό μάθημα για να μάθουν τι πρέπει να κάνουν.",
+    answer: "Retired employees go to the company website, where they can find project work for the company. This may last two days or two months. The retired workers can manage their own time and work when and where they want. If they need some training to do the job, they can go to the company website and take a short course using the internet to learn what they have to do."
+  },
+  {
+    question: "Με αυτόν τον τρόπο, οι συνταξιούχοι έχουν περισσότερα χρήματα και οι εταιρείες μπορούν να αξιοποιήσουν τις δεξιότητες των συνταξιούχων εργαζομένων τους.",
+    answer: "In this way, retired people have more money, and the companies can use the skills of their retired workers."
+  },
+  {
+    question: "Ναι — περισσότερα χρήματα, αλλά λιγότερος ελεύθερος χρόνος. Δεν μου αρέσει η ιδέα να πρέπει να δουλεύω στη συνταξιοδότησή μου. Εσείς, κυρίες και κύριοι, τι πιστεύετε γι’ αυτό;",
+    answer: "Yes—more money, but less free time. I don't think I like the idea of having to work in my retirement. And you, ladies and gentlemen, what do you think about this?"
+  },
+  {
+    question: "Λοιπόν, ευχαριστούμε τους σχολιαστές μας, τον Τομ και τη Μαρί. Και αντίο!",
+    answer: "Well, thank you to our commentators, Tom and Marie. And goodbye!"
+  }
+]
+;
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>
