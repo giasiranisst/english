@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 350px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  { question: "Γεια σας, έχω μια κράτηση στο όνομα Σμιθ", answer: "Hi, I have a reservation under the name Smith" },
+  { question: "Μπορώ να κάνω check-in λίγο νωρίτερα;", answer: "Can I check in a little early?" },
+  { question: "Τι ώρα είναι το check-out;", answer: "What time is checkout?" },
+  { question: "Περιλαμβάνεται το πρωινό με το δωμάτιο;", answer: "Is breakfast included with the room?" },
+  { question: "Έχετε γυμναστήριο ή κέντρο fitness;", answer: "Do you have a gym or a fitness center?" },
+  { question: "Υπάρχει πισίνα στο ξενοδοχείο;", answer: "Is there a pool in the hotel?" },
+  { question: "Προσφέρετε δωρεάν Wi-Fi;", answer: "Do you offer free Wi-Fi?" },
+  { question: "Πού μπορώ να βρω τον κωδικό του Wi-Fi;", answer: "Where can I find the Wi-Fi password?" },
+  { question: "Μπορείτε να μου πείτε πού βρίσκεται το business center;", answer: "Could you please tell me where the business center is?" },
+  { question: "Υπάρχει εστιατόριο ή μπαρ στο ξενοδοχείο;", answer: "Is there a restaurant or bar on site?" },
+  { question: "Μπορώ να πάρω δωμάτιο σε πιο ψηλό όροφο, παρακαλώ;", answer: "Can I get a room on a higher floor, please?" },
+  { question: "Έχετε δωμάτια με καλύτερη θέα;", answer: "Do you have any rooms with a better view?" },
+  { question: "Μπορώ να έχω ένα επιπλέον μαξιλάρι και κουβέρτα, παρακαλώ;", answer: "Could I get an extra pillow and blanket, please?" },
+  { question: "Μπορώ να ζητήσω αργοπορημένο check-out;", answer: "Can I request a late checkout?" },
+  { question: "Μπορούμε να αλλάξουμε σε δωμάτιο με δύο κρεβάτια;", answer: "Can we switch to a room with two beds?" },
+  { question: "Θα ήθελα να παραγγείλω room service, παρακαλώ", answer: "I'd like to order room service, please" },
+  { question: "Μπορείτε να μου πείτε τι περιλαμβάνει το μενού του room service;", answer: "Could you please tell me what's on the room service menu?" },
+  { question: "Μπορείτε να μου πείτε τι υπάρχει στο μενού του room service;", answer: "Could you please tell me what's in the room service menu?" },
+  { question: "Μπορώ να έχω το πρωινό στο δωμάτιο, παρακαλώ;", answer: "Can I get breakfast sent up to my room, please?" },
+  { question: "Μπορώ να παραγγείλω ένα μπουκάλι νερό στο δωμάτιο, παρακαλώ;", answer: "Can I order a bottle of water to the room, please?" },
+  { question: "Μπορείτε να στείλετε και μαχαιροπίρουνα και πετσέτες;", answer: "Can you send utensils and napkins up too?" },
+  { question: "Το κλιματιστικό δεν λειτουργεί σωστά", answer: "The air conditioning isn't working properly" },
+  { question: "Δεν υπάρχει ζεστό νερό στο ντους", answer: "There's no hot water in the shower" },
+  { question: "Το τηλεχειριστήριο της τηλεόρασης δεν λειτουργεί", answer: "The TV remote isn't working" },
+  { question: "Υπάρχει μια παράξενη μυρωδιά στο δωμάτιο", answer: "There's a strange smell in the room" },
+  { question: "Νομίζω ότι υπάρχει διαρροή στο μπάνιο", answer: "I think there's a leak in the bathroom" },
+  { question: "Μπορεί κάποιος να με βοηθήσει με τις αποσκευές μου;", answer: "Can someone help me with my luggage?" },
+  { question: "Υπάρχει κάποιος που να μπορεί να καλέσει ταξί για μένα;", answer: "Is there someone who can call a taxi for me?" },
+  { question: "Μπορώ να έχω οδηγίες για το κοντινότερο φαρμακείο, παρακαλώ;", answer: "Can I get directions to the nearest pharmacy, please?" },
+  { question: "Έχετε χάρτες της πόλης;", answer: "Do you have maps of the city?" },
+  { question: "Μπορείτε να μου προτείνετε ένα καλό τοπικό εστιατόριο, παρακαλώ;", answer: "Could you recommend a good local restaurant, please?" },
+  { question: "Μπορεί κάποιος να καθαρίσει το δωμάτιο ενώ λείπουμε;", answer: "Can someone clean the room while we're out?" },
+  { question: "Μπορώ να έχω καθαρές πετσέτες, παρακαλώ;", answer: "Could I get fresh towels, please?" },
+  { question: "Χρειαζόμαστε περισσότερο χαρτί υγείας και σαπούνι", answer: "We need more toilet paper and soap" },
+  { question: "Μπορείτε να στείλετε την καθαριότητα αργότερα, όχι τώρα;", answer: "Can you send housekeeping later, not now?" },
+  { question: "Μπορούμε να παραλείψουμε την καθαριότητα σήμερα;", answer: "Can we skip housekeeping today?" },
+  { question: "Υπάρχει γραφείο εκδρομών ή κονσιέρζ;", answer: "Is there a tour desk or concierge?" },
+  { question: "Ποιος είναι ο καλύτερος τρόπος να πάω στο κέντρο της πόλης;", answer: "What's the best way to get to the city center?" },
+  { question: "Ποιος είναι ο καλύτερος τρόπος να πάω στο κέντρο της πόλης;", answer: "What is the best way to get to the city center?" },
+  { question: "Μπορώ να κλείσω ταξί για αύριο το πρωί;", answer: "Can I book a taxi for tomorrow morning?" },
+  { question: "Υπάρχουν κοντινά αξιοθέατα που αξίζει να επισκεφτώ;", answer: "Are there any nearby attractions worth visiting?" },
+  { question: "Πουλάτε εισιτήρια για τοπικές εκδηλώσεις ή εκδρομές;", answer: "Do you sell tickets for local events or tours?" },
+  { question: "Θα ήθελα να κάνω check-out, παρακαλώ", answer: "I'd like to check out, please" },
+  { question: "Μπορώ να αφήσω τις αποσκευές μου εδώ μετά το check-out;", answer: "Can I leave my bags with you after checkout?" },
+  { question: "Υπάρχει επιπλέον χρέωση για αργοπορημένο check-out;", answer: "Is there an extra charge for late checkout?" },
+  { question: "Μπορείτε να μου στείλετε ένα αντίγραφο της απόδειξης μέσω email;", answer: "Can you email me a copy of the receipt?" },
+  { question: "Μπορείτε να μου πείτε πού μπορώ να παρκάρω το αυτοκίνητό μου;", answer: "Can you please tell me where I can park my car?" },
+  { question: "Προσφέρετε υπηρεσίες πλυντηρίου;", answer: "Do you offer laundry services?" },
+  { question: "Μπορώ να έχω ξυπνητήρι στις 6:00 π.μ., παρακαλώ;", answer: "Can I get a wakeup call at 6:00 am, please?" },
+  { question: "Υπάρχουν αυτόματοι πωλητές ή mini bars;", answer: "Do you have vending machines or mini bars?" },
+  { question: "Επιτρέπεται το κάπνισμα στο δωμάτιο;", answer: "Is smoking allowed in the room?" }
+];
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.textContent = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>

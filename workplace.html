@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 350px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  {
+    question: "call in sick",
+    answer: "ασθενώ και ενημερώνω τη δουλειά ότι δεν έρχομαι<br><br>Example: I had to call in sick today. I think I've caught something."
+  },
+  {
+    question: "call off work",
+    answer: "ακυρώνω την εργασία για οποιονδήποτε λόγο<br><br>Example: I'm calling off work tomorrow for a family emergency."
+  },
+  {
+    question: "take a day off",
+    answer: "παίρνω άδεια για μια μέρα<br><br>Example: I'm taking a day off on Friday to recharge."
+  },
+  {
+    question: "clock in",
+    answer: "σημειώνω την έναρξη της βάρδιας<br><br>Example: I clock in at 8 every morning."
+  },
+  {
+    question: "clock out",
+    answer: "σημειώνω το τέλος της βάρδιας<br><br>Example: Don't forget to clock out before you leave."
+  },
+  {
+    question: "work overtime",
+    answer: "δουλεύω υπερωρίες<br><br>Example: I had to work overtime last night to finish everything."
+  },
+  {
+    question: "on the clock",
+    answer: "είμαι στη δουλειά και πληρώνομαι<br><br>Example: You shouldn't be on social media while you're on the clock."
+  },
+  {
+    question: "off the clock",
+    answer: "δεν εργάζομαι και δεν πληρώνομαι<br><br>Example: I answered a few emails off the clock."
+  },
+  {
+    question: "follow up",
+    answer: "κάνω συνέχεια ή επιστρέφω σε κάτι<br><br>Example: I'll follow up with her tomorrow about the order."
+  },
+  {
+    question: "touch base",
+    answer: "λέω να μιλήσουμε σύντομα<br><br>Example: Let's touch base later this afternoon."
+  },
+  {
+    question: "keep me posted",
+    answer: "κρατάς ενημερωμένο κάποιον<br><br>Example: Keep me posted if anything changes."
+  },
+  {
+    question: "check in",
+    answer: "ελέγχω πώς πάνε τα πράγματα<br><br>Example: Just checking in. How's the project coming along?"
+  },
+  {
+    question: "wrap up",
+    answer: "ολοκληρώνω κάτι<br><br>Example: Let's wrap up this call in the next few minutes."
+  },
+  {
+    question: "run it by someone",
+    answer: "συμβουλεύομαι ή ζητώ γνώμη<br><br>Example: Can I run this by you before I send it out?"
+  },
+  {
+    question: "take on",
+    answer: "αναλαμβάνω ευθύνη<br><br>Example: I can take on the new assignment if needed."
+  },
+  {
+    question: "catch up on",
+    answer: "αναπληρώνω καθυστερήσεις<br><br>Example: I need to catch up on emails this afternoon."
+  },
+  {
+    question: "fall behind",
+    answer: "καθυστερώ<br><br>Example: I've fallen behind on my reports this week."
+  },
+  {
+    question: "get ahead",
+    answer: "προλαβαίνω ή προχωρώ μπροστά<br><br>Example: I stayed a bit late yesterday to get ahead for this week."
+  },
+  {
+    question: "meet a deadline",
+    answer: "τηρώ την προθεσμία<br><br>Example: We need to meet the deadline by Friday."
+  },
+  {
+    question: "get back to someone",
+    answer: "απαντώ αργότερα<br><br>Example: I'll get back to you after the meeting."
+  },
+  {
+    question: "flexible hours",
+    answer: "ευέλικτο ωράριο<br><br>Example: My job offers flexible hours, so I can come in a little later if needed."
+  },
+  {
+    question: "fixed schedule",
+    answer: "σταθερό ωράριο<br><br>Example: I work a fixed schedule Monday through Friday 8 to 4."
+  },
+  {
+    question: "part-time / full-time",
+    answer: "μερική / πλήρης απασχόληση<br><br>Example: She's looking for a full-time position with benefits."
+  },
+  {
+    question: "call it a day",
+    answer: "σταματώ τη δουλειά για σήμερα<br><br>Example: It's already 6:00 p.m. Let's call it a day."
+  },
+  {
+    question: "be running late",
+    answer: "καθυστέρηση<br><br>Example: Sorry, I'm running late for the Zoom call."
+  },
+  {
+    question: "no show",
+    answer: "απουσία χωρίς ενημέρωση<br><br>Example: One of the new hires was a no-show today."
+  },
+  {
+    question: "be in the loop",
+    answer: "είμαι ενημερωμένος<br><br>Example: Make sure I'm in the loop about the changes."
+  },
+  {
+    question: "be out of the loop",
+    answer: "δεν είμαι ενημερωμένος<br><br>Example: I've been out of the loop since I was on vacation."
+  },
+  {
+    question: "give someone a heads up",
+    answer: "προειδοποιώ κάποιον<br><br>Example: Just giving you a heads up. The deadline might move up."
+  },
+  {
+    question: "run late on something",
+    answer: "καθυστερώ σε κάτι<br><br>Example: I'm running late on the budget report."
+  },
+  {
+    question: "send it over",
+    answer: "στέλνω μέσω email ή μοιράζομαι αρχείο<br><br>Example: Can you send that file over when you get a chance?"
+  },
+  {
+    question: "loop someone in",
+    answer: "εντάσσω κάποιον στην ενημέρωση<br><br>Example: Loop Karen in on the email so that she's aware."
+  },
+  {
+    question: "handle it",
+    answer: "αναλαμβάνω να το φροντίσω<br><br>Example: Don't worry about the client. I'll handle it."
+  },
+  {
+    question: "be swamped",
+    answer: "είμαι πολύ απασχολημένος<br><br>Example: I'd love to join, but I'm swamped right now."
+  },
+  {
+    question: "be slammed",
+    answer: "είμαι υπερφορτωμένος με δουλειά<br><br>Example: We've been slammed all week with new orders."
+  },
+  {
+    question: "take initiative",
+    answer: "αναλαμβάνω πρωτοβουλία<br><br>Example: Thanks for taking initiative on the redesign."
+  },
+  {
+    question: "wear many hats",
+    answer: "κάνω πολλά διαφορετικά καθήκοντα<br><br>Example: In startups, we all wear many hats."
+  },
+  {
+    question: "light workload",
+    answer: "έχω λίγα πράγματα να κάνω<br><br>Example: This week's been quiet. I've had a light workload."
+  },
+  {
+    question: "step up",
+    answer: "αναλαμβάνω περισσότερη ευθύνη<br><br>Example: I really appreciate you stepping up last week."
+  },
+  {
+    question: "be on top of something",
+    answer: "διαχειρίζομαι καλά κάτι<br><br>Example: She's really on top of things with a new project."
+  },
+  {
+    question: "drop the ball",
+    answer: "κάνω λάθος ή ξεχνάω κάτι<br><br>Example: I dropped the ball. I forgot to send the client update."
+  },
+  {
+    question: "run into a problem",
+    answer: "αντιμετωπίζω πρόβλημα<br><br>Example: We ran into a problem with a software update."
+  },
+  {
+    question: "sort it out",
+    answer: "λύνω το πρόβλημα<br><br>Example: There was a mixup, but we sorted out quickly."
+  },
+  {
+    question: "in a bind",
+    answer: "είμαι σε δύσκολη κατάσταση<br><br>Example: I'm in a bind."
+  }
+];
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>

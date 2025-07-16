@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 350px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+<script>
+  const flashcards = [
+  { question: "How old are you?", answer: "I’m 12 years old." },
+  { question: "Where are you from?", answer: "I’m from Canada." },
+  { question: "What is your favorite color?", answer: "My favorite color is red." },
+  { question: "Do you like sports?", answer: "Yes, I like soccer." },
+  { question: "Do you play any instruments?", answer: "Yes, I play the piano." },
+  { question: "What is your favorite food?", answer: "My favorite food is pizza." },
+  { question: "Where do you live?", answer: "I live in New York." },
+  { question: "Do you have a pet?", answer: "Yes, I have a dog." },
+  { question: "What is your favorite hobby?", answer: "My favorite hobby is reading books." },
+  { question: "Can you ride a bike?", answer: "Yes, I can." },
+  { question: "What time is it?", answer: "It’s 3:00." },
+  { question: "What do you like to do in the evening?", answer: "I like watching TV." },
+  { question: "Do you like school?", answer: "Yes, I enjoy school." },
+  { question: "What is your favorite subject?", answer: "My favorite subject is math." },
+  { question: "How many people are in your family?", answer: "There are four people in my family." },
+  { question: "Do you like playing video games?", answer: "Yes, I enjoy playing video games." },
+  { question: "What is your favorite movie?", answer: "My favorite movie is Toy Story." },
+  { question: "Do you like music?", answer: "Yes, I love music." },
+  { question: "Do you have any brothers or sisters?", answer: "Yes, I have one brother." },
+  { question: "Can you swim?", answer: "Yes, I can swim." },
+  { question: "What is your favorite season?", answer: "My favorite season is summer." },
+  { question: "Do you like ice cream?", answer: "Yes, I love ice cream." },
+  { question: "What do you want to be when you grow up?", answer: "I want to be a teacher." },
+  { question: "Do you like going to the park?", answer: "Yes, I like going to the park." },
+  { question: "Do you speak any other languages?", answer: "Yes, I can speak Spanish." },
+  { question: "Are you scared of the dark?", answer: "No, I’m not scared of the dark." },
+  { question: "Do you like reading books?", answer: "Yes, I do." },
+  { question: "Do you like to dance?", answer: "Yes, I like dancing." },
+  { question: "Do you like playing with toys?", answer: "Yes, I like playing with toys." },
+  { question: "Do you have a smartphone?", answer: "Yes, I have a smartphone." },
+  { question: "What is your favorite animal?", answer: "My favorite animal is a cat." },
+  { question: "What do you like to eat for lunch?", answer: "I usually eat a sandwich." },
+  { question: "Do you like playing outside?", answer: "Yes, I enjoy playing outside." },
+  { question: "What’s your favorite TV show?", answer: "My favorite TV show is Friends." },
+  { question: "Do you like playing chess?", answer: "Yes, I can play chess." },
+  { question: "Are you a morning person?", answer: "Yes, I’m a morning person." },
+  { question: "Do you like to shop?", answer: "Yes, I enjoy shopping." },
+  { question: "Do you like rainy days?", answer: "No, I prefer sunny days." }
+];
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.textContent = flashcards[currentIndex].answer;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .flashcard {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 350px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.6s;
+      perspective: 1000px;
+      position: relative;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  { question: "Where are you flying to?", answer: "I am flying to Rome today." },
+  { question: "Can I see your passport, please?", answer: "Yes, of course. Here you are." },
+  { question: "Are you checking in any bags?", answer: "Yes, I have one suitcase to check in." },
+  { question: "Do you have a carry-on bag?", answer: "Yes, I have this small backpack." },
+  { question: "Please put your big suitcase on the scale.", answer: "Okay, I am putting it on now." },
+  { question: "Would you like a window or an aisle seat?", answer: "I would like a window seat, please." },
+  { question: "Here is your boarding pass.", answer: "Thank you very much for your help." },
+  { question: "Your gate is number 15.", answer: "Thank you. I will go there now." },
+
+  // 2. Finding Your Way Around the Airport
+  { question: "Excuse me. Where is the check-in counter?", answer: "It is over there on the right." },
+  { question: "Can you help me, please?", answer: "Yes, of course. What do you need?" },
+  { question: "Where can I find the departures board?", answer: "The departures board is behind you." },
+  { question: "Is my flight to Berlin on time?", answer: "Yes, your flight is not delayed." },
+  { question: "Do you know where gate A7 is?", answer: "Yes, go straight and then turn left." },
+
+  // 3. Security Checkpoint
+  { question: "Can I check in my luggage here?", answer: "Yes, this is the right place." },
+  { question: "Do I need to take off my watch?", answer: "Yes, please put it in the tray." },
+  { question: "Can I keep my jacket on?", answer: "No, please take your jacket off." },
+  { question: "Do I take my laptop out of the bag?", answer: "Yes, you need to take it out." },
+  { question: "What about liquids like water?", answer: "You cannot take that water with you." },
+
+  // 4. Waiting at the Gate
+  { question: "Is this the right queue for London?", answer: "Yes, you are in the correct line." },
+  { question: "What time is it now?", answer: "It is 10:00 in the morning." },
+  { question: "How many bags can I take?", answer: "You can check in two bags." },
+  { question: "Is this bag okay for carry-on?", answer: "Yes, that bag is a good size." },
+  { question: "Where are the toilets, please?", answer: "They are just around the corner." },
+  { question: "Can I get a coffee somewhere?", answer: "Yes, there is a cafe near gate 5." },
+
+  // 5. General Questions & Small Talk
+  { question: "What is in your small bag?", answer: "I have a book and a sweater." },
+  { question: "Where is our gate?", answer: "Our gate is B12." },
+  { question: "Is it far from here?", answer: "No, it is a five-minute walk." },
+  { question: "Let’s look at the screen again.", answer: "Good idea. I want to check the time." },
+  { question: "What time does the flight board?", answer: "It boards at 11:30 a.m." },
+  { question: "Do we have time for a snack?", answer: "Yes, we have about 20 minutes." },
+
+  // 6. Boarding
+  { question: "I need to find my boarding pass.", answer: "It is in your jacket pocket." },
+  { question: "Can I see your boarding pass?", answer: "Yes, here it is." },
+  { question: "We have seats together. What is your seat number?", answer: "My seat number is 24A." },
+  { question: "Is this the gate for the flight to Madrid?", answer: "Yes, you are in the right place." },
+  { question: "Is the flight delayed?", answer: "No, it looks like it’s on time." },
+  { question: "Can I charge my phone here?", answer: "Yes, there are some outlets over there." },
+  { question: "Do you have your passport ready?", answer: "Yes, I have it in my hand." },
+  { question: "When do we get on the plane?", answer: "We can get on the plane very soon." },
+
+  // 7. On the Plane
+  { question: "Can you help me find my seat?", answer: "Yes, your seat is right here." },
+  { question: "Can I put my bag up here?", answer: "Yes, there is space for your bag." },
+  { question: "Could you please move your coat?", answer: "Of course, I will move it now." },
+  { question: "Is it okay to use my phone now?", answer: "No, please turn it off for takeoff." },
+  { question: "Can I change seats with you?", answer: "I'm sorry. I like my window seat." },
+  { question: "Is it okay to recline my seat?", answer: "Yes, you can recline your seat now." },
+
+  // 8. During the Flight
+  { question: "Can I have a glass of water, please?", answer: "Yes, I will bring it to you." },
+  { question: "Are there any snacks?", answer: "Yes, we have cookies or pretzels." },
+  { question: "Could I have a blanket?", answer: "Yes, of course. Here you go." },
+  { question: "What time do we arrive?", answer: "We will arrive at 3:00 p.m. local time." },
+  { question: "Where is the restroom on the plane?", answer: "It is at the back of the plane." },
+  { question: "Can I have a pair of headphones?", answer: "Of course, I will get them for you." },
+  { question: "Excuse me. Could I have another pillow?", answer: "Certainly. I will bring one to you." },
+  { question: "My screen is not working.", answer: "I can restart it for you." },
+  { question: "I feel a little cold.", answer: "I can bring you an extra blanket." },
+  { question: "When will the food be served?", answer: "We will serve lunch in about 30 minutes." },
+  { question: "Would you like something to drink?", answer: "Yes, an orange juice, please." },
+  { question: "Do you want ice in your drink?", answer: "No, thank you. No ice for me." },
+
+  // 9. Travel Talk with Fellow Passengers
+  { question: "Are you traveling for work or holiday?", answer: "I am traveling for a holiday." },
+  { question: "Is this your first time in Paris?", answer: "Yes, it is my first visit." },
+  { question: "What is the weather like in London?", answer: "I think it is a little cold and rainy." },
+  { question: "How long is the flight?", answer: "It is about 2 hours long." },
+  { question: "Do you want to watch a movie?", answer: "Yes, that sounds like a great idea." },
+  { question: "Can you tell me the time, please?", answer: "Yes, it is now 4:00." },
+
+  // 10. Landing and Arrival
+  { question: "The captain is speaking now. What is he saying?", answer: "I cannot hear. He said we are landing soon." },
+  { question: "Please fasten your seat belt.", answer: "Okay, my seat belt is on." },
+  { question: "Please put your seat up.", answer: "I am putting my seat up now." },
+  { question: "Do I need to fill out this form?", answer: "Yes, everyone needs to complete it." },
+  { question: "Can I borrow your pen?", answer: "Yes, of course. Here it is." },
+  { question: "What do I write for my address?", answer: "You can write the name of your hotel." },
+
+  // 11. Immigration & Baggage Claim
+  { question: "The plane has landed.", answer: "That was a very smooth landing." },
+  { question: "Can we get up now?", answer: "No, we have to wait for the green light." },
+  { question: "Don’t forget your book.", answer: "Oh, thank you for reminding me." },
+  { question: "Do you have everything with you?", answer: "Yes, I have my passport and my bag." },
+  { question: "Please have your passport ready.", answer: "Yes, I have it right here." },
+  { question: "What is the purpose of your visit?", answer: "I am here on vacation for 2 weeks." },
+  { question: "Where will you be staying?", answer: "I will be staying at the Grand Hotel." },
+  { question: "Do you have anything to declare?", answer: "No, I do not have anything." },
+  { question: "Can you open your bag for me, please?", answer: "Yes, of course. No problem." },
+  { question: "Is this your first time in the country?", answer: "Yes, it is my very first visit." },
+  { question: "Welcome. Enjoy your stay.", answer: "Thank you very much." },
+
+  // 12. After Arrival – Transport & Farewell
+  { question: "Where do we get our suitcases?", answer: "We need to go to baggage claim." },
+  { question: "Which number is our flight?", answer: "Our flight is on carousel number four." },
+  { question: "I see my bag. It's the red one.", answer: "Great. I am still looking for mine." },
+    { question: "Can you help me lift my bag?", answer: "Of course. It looks very heavy." },
+  { question: "My suitcase is not here.", answer: "Let's go to the lost luggage office." },
+  { question: "Do you have all your bags?", answer: "Yes, I have my suitcase and my carry-on." },
+  { question: "How do we get to the city center?", answer: "We can take a bus or a taxi." },
+  { question: "Is the bus station far from here?", answer: "No, it is just outside the exit." },
+  { question: "Where can I buy a ticket?", answer: "You can buy one at that machine." },
+  { question: "Does this bus go to the city?", answer: "Yes, this is the airport express bus." },
+  { question: "How much is a taxi to the hotel?", answer: "It is about $40." },
+  { question: "Is someone meeting you here?", answer: "Yes, my friend is waiting for me." },
+  { question: "I need to find the car rental desk.", answer: "The signs say it is on the next level." },
+  { question: "Well, this is my stop.", answer: "It was nice to meet you." },
+  { question: "You, too. Have a wonderful holiday.", answer: "Thanks. Enjoy your trip as well." },
+  { question: "Let’s find a taxi now.", answer: "Okay. The taxi stand is over there." },
+  { question: "Do you need any help?", answer: "No, I’m fine. Thank you." },
+  { question: "Goodbye and have a safe journey.", answer: "Thank you. You too. Goodbye." }
+];
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.textContent = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>
