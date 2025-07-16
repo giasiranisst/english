@@ -14,24 +14,29 @@
       height: 100vh;
       margin: 0;
     }
-    .flashcard {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 50vw;
-      height: 40vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.6s;
-      perspective: 1000px;
-      position: relative;
-    }
+.flashcard {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 400px;                  /* παίρνει όσο χώρο χρειάζεται */
+            /* αλλά όχι πάνω από 90% πλάτος */
+  height: 500px;                 /* προσαρμόζεται στο περιεχόμενο */
+           /* περιορίζει το ύψος */
+              /* αν ξεπεράσει, δείχνει scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.6s;
+  perspective: 1000px;
+  position: relative;
+  box-sizing: border-box;       /* padding μέσα στα όρια */
+}
+
     .flashcard-inner {
       position: relative;
       width: 100%;
