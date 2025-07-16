@@ -113,125 +113,307 @@
 
 <script>
   const flashcards = [
-  { question: "Where are you flying to?", answer: "I am flying to Rome today." },
-  { question: "Can I see your passport, please?", answer: "Yes, of course. Here you are." },
-  { question: "Are you checking in any bags?", answer: "Yes, I have one suitcase to check in." },
-  { question: "Do you have a carry-on bag?", answer: "Yes, I have this small backpack." },
-  { question: "Please put your big suitcase on the scale.", answer: "Okay, I am putting it on now." },
-  { question: "Would you like a window or an aisle seat?", answer: "I would like a window seat, please." },
-  { question: "Here is your boarding pass.", answer: "Thank you very much for your help." },
-  { question: "Your gate is number 15.", answer: "Thank you. I will go there now." },
+  { question: "Πού πετάτε;", answer: "Where are you flying to?" },
+  { question: "Σήμερα πετάω για Ρώμη.", answer: "I am flying to Rome today." },
+
+  { question: "Μπορώ να δω το διαβατήριό σας, παρακαλώ;", answer: "Can I see your passport, please?" },
+  { question: "Ναι, φυσικά. Ορίστε.", answer: "Yes, of course. Here you are." },
+
+  { question: "Έχετε αποσκευές για check-in;", answer: "Are you checking in any bags?" },
+  { question: "Ναι, έχω μία βαλίτσα για check-in.", answer: "Yes, I have one suitcase to check in." },
+
+  { question: "Έχετε χειραποσκευή;", answer: "Do you have a carry-on bag?" },
+  { question: "Ναι, έχω αυτό το μικρό σακίδιο.", answer: "Yes, I have this small backpack." },
+
+  { question: "Βάλτε τη μεγάλη βαλίτσα σας στη ζυγαριά, παρακαλώ.", answer: "Please put your big suitcase on the scale." },
+  { question: "Εντάξει, τη βάζω τώρα.", answer: "Okay, I am putting it on now." },
+
+  { question: "Θέλετε θέση δίπλα στο παράθυρο ή στο διάδρομο;", answer: "Would you like a window or an aisle seat?" },
+  { question: "Θα ήθελα θέση στο παράθυρο, παρακαλώ.", answer: "I would like a window seat, please." },
+
+  { question: "Ορίστε η κάρτα επιβίβασής σας.", answer: "Here is your boarding pass." },
+  { question: "Σας ευχαριστώ πολύ για τη βοήθεια.", answer: "Thank you very much for your help." },
+
+  { question: "Η πύλη σας είναι ο αριθμός 15.", answer: "Your gate is number 15." },
+  { question: "Ευχαριστώ. Θα πάω εκεί τώρα.", answer: "Thank you. I will go there now." },
 
   // 2. Finding Your Way Around the Airport
-  { question: "Excuse me. Where is the check-in counter?", answer: "It is over there on the right." },
-  { question: "Can you help me, please?", answer: "Yes, of course. What do you need?" },
-  { question: "Where can I find the departures board?", answer: "The departures board is behind you." },
-  { question: "Is my flight to Berlin on time?", answer: "Yes, your flight is not delayed." },
-  { question: "Do you know where gate A7 is?", answer: "Yes, go straight and then turn left." },
+  { question: "Με συγχωρείτε. Πού είναι ο πάγκος check-in;", answer: "Excuse me. Where is the check-in counter?" },
+  { question: "Είναι εκεί στα δεξιά.", answer: "It is over there on the right." },
+
+  { question: "Μπορείτε να με βοηθήσετε, παρακαλώ;", answer: "Can you help me, please?" },
+  { question: "Ναι, φυσικά. Τι χρειάζεστε;", answer: "Yes, of course. What do you need?" },
+
+  { question: "Πού μπορώ να βρω την οθόνη αναχωρήσεων;", answer: "Where can I find the departures board?" },
+  { question: "Η οθόνη αναχωρήσεων είναι πίσω σας.", answer: "The departures board is behind you." },
+
+  { question: "Η πτήση μου για το Βερολίνο είναι στην ώρα της;", answer: "Is my flight to Berlin on time?" },
+  { question: "Ναι, η πτήση σας δεν έχει καθυστέρηση.", answer: "Yes, your flight is not delayed." },
+
+  { question: "Ξέρετε πού είναι η πύλη A7;", answer: "Do you know where gate A7 is?" },
+  { question: "Ναι, πηγαίνετε ευθεία και μετά στρίψτε αριστερά.", answer: "Yes, go straight and then turn left." },
 
   // 3. Security Checkpoint
-  { question: "Can I check in my luggage here?", answer: "Yes, this is the right place." },
-  { question: "Do I need to take off my watch?", answer: "Yes, please put it in the tray." },
-  { question: "Can I keep my jacket on?", answer: "No, please take your jacket off." },
-  { question: "Do I take my laptop out of the bag?", answer: "Yes, you need to take it out." },
-  { question: "What about liquids like water?", answer: "You cannot take that water with you." },
+  { question: "Μπορώ να κάνω check-in τις αποσκευές μου εδώ;", answer: "Can I check in my luggage here?" },
+  { question: "Ναι, αυτό είναι το σωστό μέρος.", answer: "Yes, this is the right place." },
+
+  { question: "Πρέπει να βγάλω το ρολόι μου;", answer: "Do I need to take off my watch?" },
+  { question: "Ναι, παρακαλώ βάλτε το στο δίσκο.", answer: "Yes, please put it in the tray." },
+
+  { question: "Μπορώ να κρατήσω το σακάκι μου;", answer: "Can I keep my jacket on?" },
+  { question: "Όχι, παρακαλώ βγάλτε το σακάκι σας.", answer: "No, please take your jacket off." },
+
+  { question: "Πρέπει να βγάλω τον φορητό υπολογιστή από την τσάντα;", answer: "Do I take my laptop out of the bag?" },
+  { question: "Ναι, πρέπει να τον βγάλετε.", answer: "Yes, you need to take it out." },
+
+  { question: "Τι γίνεται με τα υγρά όπως το νερό;", answer: "What about liquids like water?" },
+  { question: "Δεν μπορείτε να πάρετε αυτό το νερό μαζί σας.", answer: "You cannot take that water with you." },
 
   // 4. Waiting at the Gate
-  { question: "Is this the right queue for London?", answer: "Yes, you are in the correct line." },
-  { question: "What time is it now?", answer: "It is 10:00 in the morning." },
-  { question: "How many bags can I take?", answer: "You can check in two bags." },
-  { question: "Is this bag okay for carry-on?", answer: "Yes, that bag is a good size." },
-  { question: "Where are the toilets, please?", answer: "They are just around the corner." },
-  { question: "Can I get a coffee somewhere?", answer: "Yes, there is a cafe near gate 5." },
+  { question: "Αυτή είναι η σωστή ουρά για το Λονδίνο;", answer: "Is this the right queue for London?" },
+  { question: "Ναι, είστε στη σωστή σειρά.", answer: "Yes, you are in the correct line." },
+
+  { question: "Τι ώρα είναι τώρα;", answer: "What time is it now?" },
+  { question: "Είναι 10:00 το πρωί.", answer: "It is 10:00 in the morning." },
+
+  { question: "Πόσες αποσκευές μπορώ να πάρω;", answer: "How many bags can I take?" },
+  { question: "Μπορείτε να κάνετε check-in δύο αποσκευές.", answer: "You can check in two bags." },
+
+  { question: "Είναι αυτή η τσάντα κατάλληλη για χειραποσκευή;", answer: "Is this bag okay for carry-on?" },
+  { question: "Ναι, αυτή η τσάντα είναι σε καλή μέγεθος.", answer: "Yes, that bag is a good size." },
+
+  { question: "Πού είναι οι τουαλέτες, παρακαλώ;", answer: "Where are the toilets, please?" },
+  { question: "Είναι λίγο πιο κάτω στη γωνία.", answer: "They are just around the corner." },
+
+  { question: "Μπορώ να πάρω έναν καφέ κάπου;", answer: "Can I get a coffee somewhere?" },
+  { question: "Ναι, υπάρχει ένα καφέ κοντά στην πύλη 5.", answer: "Yes, there is a cafe near gate 5." },
 
   // 5. General Questions & Small Talk
-  { question: "What is in your small bag?", answer: "I have a book and a sweater." },
-  { question: "Where is our gate?", answer: "Our gate is B12." },
-  { question: "Is it far from here?", answer: "No, it is a five-minute walk." },
-  { question: "Let’s look at the screen again.", answer: "Good idea. I want to check the time." },
-  { question: "What time does the flight board?", answer: "It boards at 11:30 a.m." },
-  { question: "Do we have time for a snack?", answer: "Yes, we have about 20 minutes." },
+  { question: "Τι έχετε στην μικρή τσάντα σας;", answer: "What is in your small bag?" },
+  { question: "Έχω ένα βιβλίο και ένα πουλόβερ.", answer: "I have a book and a sweater." },
+
+  { question: "Πού είναι η πύλη μας;", answer: "Where is our gate?" },
+  { question: "Η πύλη μας είναι η B12.", answer: "Our gate is B12." },
+
+  { question: "Είναι μακριά από εδώ;", answer: "Is it far from here?" },
+  { question: "Όχι, είναι πέντε λεπτά με τα πόδια.", answer: "No, it is a five-minute walk." },
+
+  { question: "Ας κοιτάξουμε ξανά την οθόνη.", answer: "Let’s look at the screen again." },
+  { question: "Καλή ιδέα. Θέλω να ελέγξω την ώρα.", answer: "Good idea. I want to check the time." },
+
+  { question: "Τι ώρα αρχίζει η επιβίβαση;", answer: "What time does the flight board?" },
+  { question: "Αρχίζει στις 11:30 π.μ.", answer: "It boards at 11:30 a.m." },
+
+  { question: "Έχουμε χρόνο για ένα σνακ;", answer: "Do we have time for a snack?" },
+  { question: "Ναι, έχουμε περίπου 20 λεπτά.", answer: "Yes, we have about 20 minutes." },
 
   // 6. Boarding
-  { question: "I need to find my boarding pass.", answer: "It is in your jacket pocket." },
-  { question: "Can I see your boarding pass?", answer: "Yes, here it is." },
-  { question: "We have seats together. What is your seat number?", answer: "My seat number is 24A." },
-  { question: "Is this the gate for the flight to Madrid?", answer: "Yes, you are in the right place." },
-  { question: "Is the flight delayed?", answer: "No, it looks like it’s on time." },
-  { question: "Can I charge my phone here?", answer: "Yes, there are some outlets over there." },
-  { question: "Do you have your passport ready?", answer: "Yes, I have it in my hand." },
-  { question: "When do we get on the plane?", answer: "We can get on the plane very soon." },
+  { question: "Πρέπει να βρω την κάρτα επιβίβασής μου.", answer: "I need to find my boarding pass." },
+  { question: "Είναι στην τσέπη του σακακιού σου.", answer: "It is in your jacket pocket." },
+
+  { question: "Μπορώ να δω την κάρτα επιβίβασής σας;", answer: "Can I see your boarding pass?" },
+  { question: "Ναι, ορίστε.", answer: "Yes, here it is." },
+
+  { question: "Έχουμε θέσεις μαζί. Ποιος είναι ο αριθμός της θέσης σας;", answer: "We have seats together. What is your seat number?" },
+  { question: "Ο αριθμός της θέσης μου είναι 24A.", answer: "My seat number is 24A." },
+
+  { question: "Αυτή είναι η πύλη για την πτήση προς Μαδρίτη;", answer: "Is this the gate for the flight to Madrid?" },
+  { question: "Ναι, είστε στο σωστό μέρος.", answer: "Yes, you are in the right place." },
+
+  { question: "Η πτήση έχει καθυστέρηση;", answer: "Is the flight delayed?" },
+  { question: "Όχι, φαίνεται ότι είναι στην ώρα της.", answer: "No, it looks like it’s on time." },
+
+  { question: "Μπορώ να φορτίσω το τηλέφωνό μου εδώ;", answer: "Can I charge my phone here?" },
+  { question: "Ναι, υπάρχουν μερικές πρίζες εκεί πέρα.", answer: "Yes, there are some outlets over there." },
+
+  { question: "Έχετε το διαβατήριό σας έτοιμο;", answer: "Do you have your passport ready?" },
+  { question: "Ναι, το έχω στο χέρι μου.", answer: "Yes, I have it in my hand." },
+
+  { question: "Πότε θα επιβιβαστούμε στο αεροπλάνο;", answer: "When do we get on the plane?" },
+  { question: "Μπορούμε να επιβιβαστούμε πολύ σύντομα.", answer: "We can get on the plane very soon." },
 
   // 7. On the Plane
-  { question: "Can you help me find my seat?", answer: "Yes, your seat is right here." },
-  { question: "Can I put my bag up here?", answer: "Yes, there is space for your bag." },
-  { question: "Could you please move your coat?", answer: "Of course, I will move it now." },
-  { question: "Is it okay to use my phone now?", answer: "No, please turn it off for takeoff." },
-  { question: "Can I change seats with you?", answer: "I'm sorry. I like my window seat." },
-  { question: "Is it okay to recline my seat?", answer: "Yes, you can recline your seat now." },
+  { question: "Μπορείτε να με βοηθήσετε να βρω τη θέση μου;", answer: "Can you help me find my seat?" },
+  { question: "Ναι, η θέση σας είναι εδώ.", answer: "Yes, your seat is right here." },
+
+  { question: "Μπορώ να βάλω την τσάντα μου εδώ πάνω;", answer: "Can I put my bag up here?" },
+  { question: "Ναι, υπάρχει χώρος για την τσάντα σας.", answer: "Yes, there is space for your bag." },
+
+  { question: "Μπορείτε να μετακινήσετε το παλτό σας, παρακαλώ;", answer: "Could you please move your coat?" },
+  { question: "Φυσικά, θα το μετακινήσω τώρα.", answer: "Of course, I will move it now." },
+
+  { question: "Είναι εντάξει να χρησιμοποιήσω το τηλέφωνό μου τώρα;", answer: "Is it okay to use my phone now?" },
+  { question: "Όχι, παρακαλώ απενεργοποιήστε το για την απογείωση.", answer: "No, please turn it off for takeoff." },
+
+  { question: "Μπορώ να αλλάξω θέση μαζί σας;", answer: "Can I change seats with you?" },
+  { question: "Λυπάμαι. Μου αρέσει η θέση μου στο παράθυρο.", answer: "I'm sorry. I like my window seat." },
+
+  { question: "Είναι εντάξει να recline (ανακλίνω) τη θέση μου;", answer: "Is it okay to recline my seat?" },
+  { question: "Ναι, μπορείτε να ανακλίνετε τη θέση σας τώρα.", answer: "Yes, you can recline your seat now." },
 
   // 8. During the Flight
-  { question: "Can I have a glass of water, please?", answer: "Yes, I will bring it to you." },
-  { question: "Are there any snacks?", answer: "Yes, we have cookies or pretzels." },
-  { question: "Could I have a blanket?", answer: "Yes, of course. Here you go." },
-  { question: "What time do we arrive?", answer: "We will arrive at 3:00 p.m. local time." },
-  { question: "Where is the restroom on the plane?", answer: "It is at the back of the plane." },
-  { question: "Can I have a pair of headphones?", answer: "Of course, I will get them for you." },
-  { question: "Excuse me. Could I have another pillow?", answer: "Certainly. I will bring one to you." },
-  { question: "My screen is not working.", answer: "I can restart it for you." },
-  { question: "I feel a little cold.", answer: "I can bring you an extra blanket." },
-  { question: "When will the food be served?", answer: "We will serve lunch in about 30 minutes." },
-  { question: "Would you like something to drink?", answer: "Yes, an orange juice, please." },
-  { question: "Do you want ice in your drink?", answer: "No, thank you. No ice for me." },
+  { question: "Μπορώ να έχω ένα ποτήρι νερό, παρακαλώ;", answer: "Can I have a glass of water, please?" },
+  { question: "Ναι, θα σας το φέρω.", answer: "Yes, I will bring it to you." },
+
+  { question: "Υπάρχουν σνακ;", answer: "Are there any snacks?" },
+  { question: "Ναι, έχουμε μπισκότα ή κράκερ.", answer: "Yes, we have cookies or pretzels." },
+
+  { question: "Μπορώ να έχω μια κουβέρτα;", answer: "Could I have a blanket?" },
+  { question: "Ναι, φυσικά. Ορίστε.", answer: "Yes, of course. Here you go." },
+
+  { question: "Τι ώρα φτάνουμε;", answer: "What time do we arrive?" },
+  { question: "Θα φτάσουμε στις 3:00 μ.μ. τοπική ώρα.", answer: "We will arrive at 3:00 p.m. local time." },
+
+  { question: "Πού είναι η τουαλέτα στο αεροπλάνο;", answer: "Where is the restroom on the plane?" },
+  { question: "Είναι στο πίσω μέρος του αεροπλάνου.", answer: "It is at the back of the plane." },
+
+  { question: "Μπορώ να έχω ένα ζευγάρι ακουστικά;", answer: "Can I have a pair of headphones?" },
+  { question: "Φυσικά, θα τα φέρω.", answer: "Of course, I will get them for you." },
+
+  { question: "Με συγχωρείτε. Μπορώ να έχω ένα ακόμη μαξιλάρι;", answer: "Excuse me. Could I have another pillow?" },
+  { question: "Βεβαίως. Θα σας φέρω ένα.", answer: "Certainly. I will bring one to you." },
+
+  { question: "Η οθόνη μου δεν λειτουργεί.", answer: "My screen is not working." },
+  { question: "Μπορώ να την επανεκκινήσω για εσάς.", answer: "I can restart it for you." },
+
+  { question: "Κρυώνω λίγο.", answer: "I feel a little cold." },
+  { question: "Μπορώ να σας φέρω μια επιπλέον κουβέρτα.", answer: "I can bring you an extra blanket." },
+
+  { question: "Πότε θα σερβιριστεί το φαγητό;", answer: "When will the food be served?" },
+  { question: "Θα σερβίρουμε το μεσημεριανό σε περίπου 30 λεπτά.", answer: "We will serve lunch in about 30 minutes." },
+
+  { question: "Θέλετε κάτι να πιείτε;", answer: "Would you like something to drink?" },
+  { question: "Ναι, ένα πορτοκαλάδα, παρακαλώ.", answer: "Yes, an orange juice, please." },
+
+  { question: "Θέλετε πάγο στο ποτό σας;", answer: "Do you want ice in your drink?" },
+  { question: "Όχι, ευχαριστώ. Χωρίς πάγο για μένα.", answer: "No, thank you. No ice for me." },
 
   // 9. Travel Talk with Fellow Passengers
-  { question: "Are you traveling for work or holiday?", answer: "I am traveling for a holiday." },
-  { question: "Is this your first time in Paris?", answer: "Yes, it is my first visit." },
-  { question: "What is the weather like in London?", answer: "I think it is a little cold and rainy." },
-  { question: "How long is the flight?", answer: "It is about 2 hours long." },
-  { question: "Do you want to watch a movie?", answer: "Yes, that sounds like a great idea." },
-  { question: "Can you tell me the time, please?", answer: "Yes, it is now 4:00." },
+  { question: "Ταξιδεύετε για δουλειά ή για διακοπές;", answer: "Are you traveling for work or holiday?" },
+  { question: "Ταξιδεύω για διακοπές.", answer: "I am traveling for a holiday." },
 
+  { question: "Είναι η πρώτη φορά σας στο Παρίσι;", answer: "Is this your first time in Paris?" },
+  { question: "Ναι, είναι η πρώτη μου επίσκεψη.", answer: "Yes, it is my first visit." },
+
+  { question: "Πώς είναι ο καιρός στο Λονδίνο;", answer: "What is the weather like in London?" },
+  { question: "Νομίζω ότι είναι λίγο κρύος και βροχερός.", answer: "I think it is a little cold and rainy." },
+
+  { question: "Πόση διάρκεια έχει η πτήση;", answer: "How long is the flight?" },
+  { question: "Διαρκεί περίπου 2 ώρες.", answer: "It is about 2 hours long." },
+
+  { question: "Θέλετε να δείτε μια ταινία;", answer: "Do you want to watch a movie?" },
+  { question: "Ναι, ακούγεται υπέροχη ιδέα.", answer: "Yes, that sounds like a great idea." },
+
+  { question: "Μπορείτε να μου πείτε την ώρα, παρακαλώ;", answer: "Can you tell me the time, please?" },
+  { question: "Ναι, είναι τώρα 4:00.", answer: "Yes, the time is 4:00 o'clock"},
   // 10. Landing and Arrival
-  { question: "The captain is speaking now. What is he saying?", answer: "I cannot hear. He said we are landing soon." },
-  { question: "Please fasten your seat belt.", answer: "Okay, my seat belt is on." },
-  { question: "Please put your seat up.", answer: "I am putting my seat up now." },
-  { question: "Do I need to fill out this form?", answer: "Yes, everyone needs to complete it." },
-  { question: "Can I borrow your pen?", answer: "Yes, of course. Here it is." },
-  { question: "What do I write for my address?", answer: "You can write the name of your hotel." },
+{ question: "Ο καπετάνιος μιλάει τώρα. Τι λέει;", answer: "The captain is speaking now. What is he saying?" },
+{ question: "Δεν μπορώ να ακούσω. Είπε ότι θα προσγειωθούμε σύντομα.", answer: "I cannot hear. He said we are landing soon." },
 
-  // 11. Immigration & Baggage Claim
-  { question: "The plane has landed.", answer: "That was a very smooth landing." },
-  { question: "Can we get up now?", answer: "No, we have to wait for the green light." },
-  { question: "Don’t forget your book.", answer: "Oh, thank you for reminding me." },
-  { question: "Do you have everything with you?", answer: "Yes, I have my passport and my bag." },
-  { question: "Please have your passport ready.", answer: "Yes, I have it right here." },
-  { question: "What is the purpose of your visit?", answer: "I am here on vacation for 2 weeks." },
-  { question: "Where will you be staying?", answer: "I will be staying at the Grand Hotel." },
-  { question: "Do you have anything to declare?", answer: "No, I do not have anything." },
-  { question: "Can you open your bag for me, please?", answer: "Yes, of course. No problem." },
-  { question: "Is this your first time in the country?", answer: "Yes, it is my very first visit." },
-  { question: "Welcome. Enjoy your stay.", answer: "Thank you very much." },
+{ question: "Παρακαλώ, ασφαλίστε τη ζώνη σας.", answer: "Please fasten your seat belt." },
+{ question: "Εντάξει, η ζώνη μου είναι ασφαλισμένη.", answer: "Okay, my seat belt is on." },
 
-  // 12. After Arrival – Transport & Farewell
-  { question: "Where do we get our suitcases?", answer: "We need to go to baggage claim." },
-  { question: "Which number is our flight?", answer: "Our flight is on carousel number four." },
-  { question: "I see my bag. It's the red one.", answer: "Great. I am still looking for mine." },
-    { question: "Can you help me lift my bag?", answer: "Of course. It looks very heavy." },
-  { question: "My suitcase is not here.", answer: "Let's go to the lost luggage office." },
-  { question: "Do you have all your bags?", answer: "Yes, I have my suitcase and my carry-on." },
-  { question: "How do we get to the city center?", answer: "We can take a bus or a taxi." },
-  { question: "Is the bus station far from here?", answer: "No, it is just outside the exit." },
-  { question: "Where can I buy a ticket?", answer: "You can buy one at that machine." },
-  { question: "Does this bus go to the city?", answer: "Yes, this is the airport express bus." },
-  { question: "How much is a taxi to the hotel?", answer: "It is about $40." },
-  { question: "Is someone meeting you here?", answer: "Yes, my friend is waiting for me." },
-  { question: "I need to find the car rental desk.", answer: "The signs say it is on the next level." },
-  { question: "Well, this is my stop.", answer: "It was nice to meet you." },
-  { question: "You, too. Have a wonderful holiday.", answer: "Thanks. Enjoy your trip as well." },
-  { question: "Let’s find a taxi now.", answer: "Okay. The taxi stand is over there." },
-  { question: "Do you need any help?", answer: "No, I’m fine. Thank you." },
-  { question: "Goodbye and have a safe journey.", answer: "Thank you. You too. Goodbye." }
+{ question: "Παρακαλώ, ανεβάστε την πλάτη του καθίσματός σας.", answer: "Please put your seat up." },
+{ question: "Ανεβάζω τώρα την πλάτη του καθίσματός μου.", answer: "I am putting my seat up now." },
+
+{ question: "Πρέπει να συμπληρώσω αυτή τη φόρμα;", answer: "Do I need to fill out this form?" },
+{ question: "Ναι, όλοι πρέπει να την συμπληρώσουν.", answer: "Yes, everyone needs to complete it." },
+
+{ question: "Μπορώ να δανειστώ το στυλό σου;", answer: "Can I borrow your pen?" },
+{ question: "Ναι, φυσικά. Ορίστε.", answer: "Yes, of course. Here it is." },
+
+{ question: "Τι να γράψω στη διεύθυνσή μου;", answer: "What do I write for my address?" },
+{ question: "Μπορείς να γράψεις το όνομα του ξενοδοχείου σου.", answer: "You can write the name of your hotel." },
+
+// 11. Immigration & Baggage Claim
+{ question: "Το αεροπλάνο έχει προσγειωθεί.", answer: "The plane has landed." },
+{ question: "Ήταν μια πολύ ομαλή προσγείωση.", answer: "That was a very smooth landing." },
+
+{ question: "Μπορούμε να σηκωθούμε τώρα;", answer: "Can we get up now?" },
+{ question: "Όχι, πρέπει να περιμένουμε το πράσινο φως.", answer: "No, we have to wait for the green light." },
+
+{ question: "Μην ξεχάσεις το βιβλίο σου.", answer: "Don’t forget your book." },
+{ question: "Ωχ, ευχαριστώ που μου το θύμισες.", answer: "Oh, thank you for reminding me." },
+
+{ question: "Έχεις όλα σου τα πράγματα;", answer: "Do you have everything with you?" },
+{ question: "Ναι, έχω το διαβατήριο και την τσάντα μου.", answer: "Yes, I have my passport and my bag." },
+
+{ question: "Παρακαλώ, να έχετε έτοιμο το διαβατήριό σας.", answer: "Please have your passport ready." },
+{ question: "Ναι, το έχω εδώ.", answer: "Yes, I have it right here." },
+
+{ question: "Ποιος είναι ο σκοπός της επίσκεψής σας;", answer: "What is the purpose of your visit?" },
+{ question: "Είμαι εδώ για διακοπές για 2 εβδομάδες.", answer: "I am here on vacation for 2 weeks." },
+
+{ question: "Πού θα μείνετε;", answer: "Where will you be staying?" },
+{ question: "Θα μείνω στο Grand Hotel.", answer: "I will be staying at the Grand Hotel." },
+
+{ question: "Έχετε κάτι να δηλώσετε;", answer: "Do you have anything to declare?" },
+{ question: "Όχι, δεν έχω κάτι.", answer: "No, I do not have anything." },
+
+{ question: "Μπορείτε να ανοίξετε την τσάντα σας, παρακαλώ;", answer: "Can you open your bag for me, please?" },
+{ question: "Ναι, φυσικά. Κανένα πρόβλημα.", answer: "Yes, of course. No problem." },
+
+{ question: "Είναι η πρώτη φορά που βρίσκεστε στη χώρα;", answer: "Is this your first time in the country?" },
+{ question: "Ναι, είναι η πρώτη μου επίσκεψη.", answer: "Yes, it is my very first visit." },
+
+{ question: "Καλώς ήρθατε. Απολαύστε τη διαμονή σας.", answer: "Welcome. Enjoy your stay." },
+{ question: "Σας ευχαριστώ πολύ.", answer: "Thank you very much." },
+
+// 12. After Arrival – Transport & Farewell
+{ question: "Πού παίρνουμε τις βαλίτσες μας;", answer: "Where do we get our suitcases?" },
+{ question: "Πρέπει να πάμε στο χώρο παραλαβής αποσκευών.", answer: "We need to go to baggage claim." },
+
+{ question: "Σε ποιον αριθμό είναι η πτήση μας;", answer: "Which number is our flight?" },
+{ question: "Η πτήση μας είναι στον ιμάντα αριθμός τέσσερα.", answer: "Our flight is on carousel number four." },
+
+{ question: "Βλέπω την τσάντα μου. Είναι η κόκκινη.", answer: "I see my bag. It's the red one." },
+{ question: "Τέλεια. Εγώ ψάχνω ακόμα τη δική μου.", answer: "Great. I am still looking for mine." },
+
+{ question: "Μπορείς να με βοηθήσεις να σηκώσω την τσάντα;", answer: "Can you help me lift my bag?" },
+{ question: "Φυσικά. Φαίνεται πολύ βαριά.", answer: "Of course. It looks very heavy." },
+
+{ question: "Η βαλίτσα μου δεν είναι εδώ.", answer: "My suitcase is not here." },
+{ question: "Ας πάμε στο γραφείο απολεσθέντων αποσκευών.", answer: "Let's go to the lost luggage office." },
+
+{ question: "Έχεις όλες τις βαλίτσες σου;", answer: "Do you have all your bags?" },
+{ question: "Ναι, έχω τη βαλίτσα και το χειραποσκευάκι μου.", answer: "Yes, I have my suitcase and my carry-on." },
+
+{ question: "Πώς πάμε στο κέντρο της πόλης;", answer: "How do we get to the city center?" },
+{ question: "Μπορούμε να πάρουμε λεωφορείο ή ταξί.", answer: "We can take a bus or a taxi." },
+
+{ question: "Είναι μακριά το λεωφορείο από εδώ;", answer: "Is the bus station far from here?" },
+{ question: "Όχι, είναι ακριβώς έξω από την έξοδο.", answer: "No, it is just outside the exit." },
+
+{ question: "Πού μπορώ να αγοράσω εισιτήριο;", answer: "Where can I buy a ticket?" },
+{ question: "Μπορείς να αγοράσεις από το μηχάνημα εκεί.", answer: "You can buy one at that machine." },
+
+{ question: "Αυτό το λεωφορείο πηγαίνει στην πόλη;", answer: "Does this bus go to the city?" },
+{ question: "Ναι, αυτό είναι το λεωφορείο έκφρες του αεροδρομίου.", answer: "Yes, this is the airport express bus." },
+
+{ question: "Πόσο κοστίζει ένα ταξί μέχρι το ξενοδοχείο;", answer: "How much is a taxi to the hotel?" },
+{ question: "Κοστίζει περίπου 40 δολάρια.", answer: "It is about $40." },
+
+{ question: "Σε περιμένει κάποιος εδώ;", answer: "Is someone meeting you here?" },
+{ question: "Ναι, με περιμένει ο φίλος μου.", answer: "Yes, my friend is waiting for me." },
+
+{ question: "Πρέπει να βρω το γραφείο ενοικίασης αυτοκινήτων.", answer: "I need to find the car rental desk." },
+{ question: "Οι πινακίδες λένε ότι είναι στον επόμενο όροφο.", answer: "The signs say it is on the next level." },
+
+{ question: "Λοιπόν, αυτή είναι η στάση μου.", answer: "Well, this is my stop." },
+{ question: "Ήταν χαρά μου που σε γνώρισα.", answer: "It was nice to meet you." },
+
+{ question: "Κι εσύ επίσης. Να περάσεις υπέροχες διακοπές.", answer: "You, too. Have a wonderful holiday." },
+{ question: "Ευχαριστώ. Καλά να περάσεις στο ταξίδι σου.", answer: "Thanks. Enjoy your trip as well." },
+
+{ question: "Ας βρούμε ένα ταξί τώρα.", answer: "Let’s find a taxi now." },
+{ question: "Εντάξει. Η στάση ταξί είναι εκεί πέρα.", answer: "Okay. The taxi stand is over there." },
+
+{ question: "Χρειάζεσαι βοήθεια;", answer: "Do you need any help?" },
+{ question: "Όχι, είμαι καλά. Ευχαριστώ.", answer: "No, I’m fine. Thank you." },
+
+{ question: "Αντίο και καλό ταξίδι.", answer: "Goodbye and have a safe journey." },
+{ question: "Ευχαριστώ. Κι εσύ. Αντίο.", answer: "Thank you. You too. Goodbye." }
+
 ];
 
   let currentIndex = 0;
