@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+.flashcard {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 400px;                  /* παίρνει όσο χώρο χρειάζεται */
+            /* αλλά όχι πάνω από 90% πλάτος */
+  height: 500px;                 /* προσαρμόζεται στο περιεχόμενο */
+           /* περιορίζει το ύψος */
+              /* αν ξεπεράσει, δείχνει scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.6s;
+  perspective: 1000px;
+  position: relative;
+  box-sizing: border-box;       /* padding μέσα στα όρια */
+}
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  { question: "Καλώς ήρθατε στην εβδομαδιαία εκπομπή Music World.", answer: "Welcome to this week's edition of Music World." },
+  { question: "Καλώς ήρθες, Τόνι Μουρ, ο ειδικός μας στη μουσική.", answer: "And welcome to Tony Moore, our music expert." },
+  { question: "Γεια σου, Λούσι, και καλημέρα σε όλους τους φίλους της μουσικής.", answer: "Hello Lucy, and good morning to all our music fans." },
+  { question: "Στις 16 Μαΐου 2006, ένα βιολί Στραντιβάρι πουλήθηκε σε δημοπρασία στη Νέα Υόρκη για τρεισήμισι εκατομμύρια δολάρια.", answer: "On May 16th, 2006, a Stradivari violin was sold at auction in New York for three and a half million dollars." },
+  { question: "Το βιολί ονομάζεται Christian Hammer και έγινε το πιο ακριβό μουσικό όργανο στον κόσμο.", answer: "The Christian Hammer violin, as it's called, had become the world's most expensive musical instrument." },
+  { question: "Γιατί είναι αυτό το βιολί τόσο ξεχωριστό;", answer: "So why is this violin so special?" },
+  { question: "Κατασκευάστηκε το 1707 από τον Αντόνιο Στραντιβάρι στο εργαστήριο της οικογένειας στην Κρεμόνα, κοντά στο Μιλάνο.", answer: "This violin was made in 1707 by Antonio Stradivari in the family workshop in Cremona near Milan." },
+  { question: "Η περίοδος 1700–1720 λέγεται η «χρυσή εποχή» του Στραντιβάρι λόγω της εξαιρετικής ποιότητας ήχου των οργάνων του.", answer: "The years 1700 to 1720 are called Stradivari’s golden period because of the exceptional sound quality of the instruments he made during this time." },
+  { question: "Γιατί είναι η ποιότητα ήχου τόσο καλή;", answer: "So why is the sound quality so good?" },
+  { question: "Κατά τη διάρκεια αυτής της περιόδου, ο Στραντιβάρι έκανε μικρές βελτιώσεις στο σχήμα του βιολιού.", answer: "During this period, Stradivari came up with some tiny improvements to the shape of the violin." },
+  { question: "Οι ειδικοί πιστεύουν ότι αυτές οι αλλαγές, κυρίως στο πάνω και πίσω μέρος, ίσως ευθύνονται για τον εξαιρετικό ήχο.", answer: "Experts think that these changes to the shape of the violin—particularly to the shape of the belly and the backplate—may in part be responsible for their incredible sound quality." },
+  { question: "Άρα το σχήμα είναι ο λόγος που τα κυνηγούν οι κορυφαίοι μουσικοί;", answer: "So it’s the shape of the violins that makes them so sought after by the world’s best musicians?" },
+  { question: "Ναι, αλλά όχι μόνο το σχήμα.", answer: "Yes, but not only the shape." },
+  { question: "Το ξύλο μπορεί να είχε αποθηκευτεί κάτω από το νερό στη λιμνοθάλασσα της Βενετίας πριν το αγοράσει ο Στραντιβάρι.", answer: "The wood Stradivari used to make his violins may have been stored underwater in the Venice lagoon before he bought it." },
+  { question: "Ίσως αυτό προκάλεσε μικρές φθορές που συνέβαλαν στον ιδιαίτερο ήχο.", answer: "It’s thought that this may have damaged the wood slightly and may in part be responsible for the special sound." },
+  { question: "Δηλαδή το σχήμα και το ξύλο της λιμνοθάλασσας κάνουν αυτά τα βιολιά τόσο ξεχωριστά;", answer: "So, the shape—and the wood that was stored in the lagoon in Venice—is why Stradivari violins are so special?" },
+  { question: "Στην πραγματικότητα, υπάρχουν και άλλες πιθανές εξηγήσεις.", answer: "Well, actually, there are one or two other possible explanations." },
+  { question: "Πες μας περισσότερα.", answer: "Tell us more." },
+  { question: "Κάποιοι ιστορικοί της μουσικής πιστεύουν ότι το βερνίκι ευθύνεται για την εξαιρετική ποιότητα ήχου.", answer: "Some music historians say that the varnish Stradivari used may be behind the exceptional sound quality." },
+  { question: "Άλλοι λένε ότι το μυστικό βρίσκεται στην κόλλα.", answer: "Others say the secret is in the glue he used." },
+  { question: "Δύο Αμερικανοί επιστήμονες πρότειναν ότι η ποιότητα οφείλεται στον ψυχρό καιρό της εποχής.", answer: "Two American scientists have recently suggested that the quality of these violins is due to the cold weather experienced in Europe during the period when the violins were made." },
+  { question: "Κρύος καιρός και υπέροχα βιολιά; Δεν βλέπω τη σύνδεση.", answer: "Cold weather and wonderful violins? I don’t see the connection." },
+  { question: "Ο ψυχρότερος καιρός έκανε τα δέντρα να μεγαλώνουν πιο αργά, με πυκνότερο ξύλο.", answer: "The colder weather resulted in trees growing more slowly, and the wood from these trees was denser than normal." },
+  { question: "Αυτό το ξύλο παράγει καλύτερο ήχο στα βιολιά.", answer: "That wood makes a better sound when it’s used for making violins." },
+  { question: "Καταλαβαίνω τώρα—όλα είναι τέλεια σε αυτά τα βιολιά.", answer: "I can see now that everything’s perfect about these violins." },
+  { question: "Ποιος αγόρασε το Christian Hammer βιολί;", answer: "By the way, who bought the Christian Hammer violin?" },
+  { question: "Δεν ξέρουμε—ο αγοραστής έμεινε ανώνυμος.", answer: "We don’t know actually—the buyer remained anonymous." },
+  { question: "Μάλλον είναι ιδιώτης συλλέκτης.", answer: "He or she is probably a private collector." },
+  { question: "Τι νομίζεις ότι θα κάνει ο νέος ιδιοκτήτης με αυτό το υπέροχο όργανο;", answer: "What do you think the new owner will do with this wonderful instrument?" },
+  { question: "Οι λάτρεις της μουσικής ελπίζουν να το επιτρέψει σε κορυφαίους βιολιστές να το παίξουν σε συναυλίες.", answer: "Music lovers are hoping that the owner will allow the world’s best violinists to play the instrument at concerts around the world." },
+  { question: "Αυτό έχει ξανασυμβεί—ο προηγούμενος ιδιοκτήτης το είχε επιτρέψει στον Γεχούντι Μενουχίν.", answer: "This has already happened in the past—its previous owner allowed Yehudi Menuhin to play the Christian Hammer 15 times." },
+  { question: "Άρα θα ακούσουμε ξανά αυτόν τον υπέροχο ήχο;", answer: "So we’ll be able to listen to its glorious sound again?" },
+  { question: "Ελπίζουμε πως ναι.", answer: "Hopefully, yes." },
+  { question: "Ευχαριστώ, Τόνι, για ένα συναρπαστικό πρόγραμμα.", answer: "Well Tony, thanks for a fascinating program." },
+  { question: "Αντίο!", answer: "Goodbye!" },
+  { question: "Και αντίο σε όλους τους λάτρεις της μουσικής.", answer: "Goodbye—and, of course, goodbye to all music lovers." },
+  { question: "Θα τα ξαναπούμε σύντομα σε άλλη εκπομπή του Music World.", answer: "We’ll meet again soon for another edition of Music World." }
+]
+
+;
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>

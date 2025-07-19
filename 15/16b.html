@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+.flashcard {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 400px;                  /* παίρνει όσο χώρο χρειάζεται */
+            /* αλλά όχι πάνω από 90% πλάτος */
+  height: 500px;                 /* προσαρμόζεται στο περιεχόμενο */
+           /* περιορίζει το ύψος */
+              /* αν ξεπεράσει, δείχνει scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.6s;
+  perspective: 1000px;
+  position: relative;
+  box-sizing: border-box;       /* padding μέσα στα όρια */
+}
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  { question: "Καλώς ήρθατε στην εβδομαδιαία εκπομπή για την κλιματική αλλαγή.", answer: "Welcome to this week's edition of Climate Change." },
+  { question: "Στο στούντιο μαζί μου είναι η ειδικός μας, Σούζαν Φέρλι.", answer: "In the studio with me is our expert Susan Furley." },
+  { question: "Γεια σου, Έρικ, και καλημέρα σε όλους.", answer: "Hello Eric and good morning everyone." },
+  { question: "Λοιπόν, Σούζαν, ας μιλήσουμε για τον καιρό στη Σκωτία σήμερα.", answer: "Well Susan, let's talk about the weather in Scotland today." },
+  { question: "Ξέρεις, σχεδιάζω να επισκεφθώ τη δυτική ακτή αυτό το καλοκαίρι και δεν ξέρω τι ρούχα να πάρω μαζί μου.", answer: "You know I'm planning to visit the west coast this summer and I really don't know what kind of clothes to take with me." },
+  { question: "Είναι κρύο εκεί, σωστά;", answer: "It's cold there, isn't it?" },
+  { question: "Όχι ακριβώς. Πάρε το μαγιό σου, μια πετσέτα θαλάσσης και αντηλιακή κρέμα.", answer: "Not really. Take your swimming costume, a beach towel, and some suntan cream." },
+  { question: "Κάνεις πλάκα, έτσι δεν είναι;", answer: "You're joking, aren't you?" },
+  { question: "Καθόλου. Η δυτική ακτή της Σκωτίας έχει πανέμορφα νησιά και λίμνες και κήπους γεμάτους τροπικά φυτά.", answer: "Not at all. The west coast of Scotland has beautiful islands and lochs and gardens full of tropical plants." },
+  { question: "Σοβαρά;", answer: "Really?" },
+  { question: "Ναι, είναι γεμάτοι με τροπικά φυτά.", answer: "Yes, they're full of tropical plants." },
+  { question: "Τροπικά φυτά στη Σκωτία; Πώς είναι αυτό δυνατό;", answer: "Tropical plants in Scotland? How is that possible?" },
+  { question: "Είναι χάρη στο Ρεύμα του Κόλπου.", answer: "It's thanks to the Gulf Stream." },
+  { question: "Ξέρεις, είναι ένα από τα σημαντικότερα ωκεάνια ρεύματα στον κόσμο.", answer: "You know it's one of the world's most important ocean currents." },
+  { question: "Μεταφέρει μεγάλες ποσότητες ζεστού νερού από την Καραϊβική στη βορειοδυτική Ευρώπη.", answer: "It carries large amounts of warm sea water from the Caribbean Sea to the northwest of Europe." },
+  { question: "Αυτό το ζεστό νερό αυξάνει τη θερμοκρασία εδώ περίπου κατά 9 βαθμούς Κελσίου.", answer: "This warm water brings about an increase in the temperature here of about 9 degrees centigrade." },
+  { question: "Χωρίς αυτό, ο καιρός στη Μεγάλη Βρετανία θα ήταν πολύ πιο ψυχρός.", answer: "Without it, the weather in Great Britain would be a lot colder." },
+  { question: "Νόμιζα ότι ήταν ήδη κρύος!", answer: "Mmm-hmm. I thought it was cold." },
+  { question: "Δηλαδή η δυτική ακτή της Σκωτίας είναι ένας τροπικός παράδεισος;", answer: "So the west coast of Scotland is a tropical paradise?" },
+  { question: "Ας μην υπερβάλλουμε.", answer: "Well let's not exaggerate." },
+  { question: "Υπάρχουν τροπικά φυτά αλλά δεν είναι ακριβώς σαν την Καραϊβική.", answer: "There are tropical plants but it's not exactly like the Caribbean." },
+  { question: "Πάντως οι χειμώνες εδώ είναι ήπιοι—τουλάχιστον προς το παρόν.", answer: "Though the winters are very mild here—at least they are for the moment." },
+  { question: "Από το 1950, οι επιστήμονες έχουν παρατηρήσει μείωση κατά 20% στις ροές κρύου νερού στον Βόρειο Ατλαντικό.", answer: "Since 1950, scientists have noticed that the flows of cold water in the North Atlantic have decreased by 20%." },
+  { question: "Δεν μιλάμε για το ίδιο το Ρεύμα του Κόλπου, αλλά αυτή η αλλαγή θα μπορούσε να το επιβραδύνει.", answer: "We're not talking about the Gulf Stream here, but this change could slow down the Gulf Stream itself." },
+  { question: "Τι προκαλεί αυτή την αλλαγή στον Βόρειο Ατλαντικό;", answer: "And what's behind this change in the North Atlantic?" },
+  { question: "Το νερό στους ωκεανούς κινείται συνεχώς.", answer: "The water in the world's oceans and seas is constantly moving." },
+  { question: "Η ταχύτητα και η κατεύθυνση αυτών των κινήσεων ελέγχονται από διάφορους παράγοντες όπως το σχήμα του βυθού, η αλατότητα του νερού και η περιστροφή της Γης.", answer: "The speed and direction of these movements of water are controlled by different factors such as the shape of the ocean floor, the salinity of the water, and the Earth's rotation." },
+  { question: "Οι επιστήμονες έχουν παρατηρήσει ότι τα παγοκάλυμματα στον Βόρειο Πόλο και στη Γροιλανδία λιώνουν λόγω του φαινομένου του θερμοκηπίου.", answer: "Scientists have noticed that the ice sheets of the North Pole and Greenland are melting due to the greenhouse effect." },
+  { question: "Αυτό μειώνει την αλατότητα του νερού και τις ροές κρύου νερού που βοηθούν το Ρεύμα του Κόλπου να φέρει ζεστό νερό στην Ευρώπη.", answer: "This is reducing the salinity of the water in the North Atlantic and is reducing the flows of cold water that help the Gulf Stream bring warm water to Western Europe." },
+  { question: "Λες δηλαδή ότι η θερμοκρασία στη Μεγάλη Βρετανία μπορεί να πέσει;", answer: "So are you saying that the sea water and the temperature in Great Britain could become colder?" },
+  { question: "Ναι, αυτό έχει ήδη συμβεί στο παρελθόν.", answer: "Yes, this has already happened in the past." },
+  { question: "Οι επιστήμονες ανακάλυψαν ότι το Ρεύμα του Κόλπου επιβραδύνθηκε ή ίσως και σταμάτησε εντελώς πριν από έντεκα χιλιάδες χρόνια.", answer: "Scientists have discovered that the Gulf Stream slowed down or maybe even stopped completely about eleven thousand years ago." },
+  { question: "Αυτό έριξε τη θερμοκρασία στη βόρεια Ευρώπη κατά πέντε βαθμούς.", answer: "This brought about a fall in the temperatures in northern Europe of five degrees." },
+  { question: "Θα μπορούσε το ίδιο να συμβεί ξανά;", answer: "And could the same thing happen again now?" },
+  { question: "Ναι, οι επιστήμονες φοβούνται ότι η μείωση της αλατότητας μπορεί να επιβραδύνει ξανά το Ρεύμα του Κόλπου.", answer: "Yes, scientists fear that a knock-on effect of the salinity reduction may be the slowing down of the Gulf Stream again." },
+  { question: "Και ποιες θα ήταν οι συνέπειες;", answer: "And what would the effects of this be?" },
+  { question: "Οι πιο απαισιόδοξες προβλέψεις μιλούν για μια νέα εποχή παγετώνων στη Μεγάλη Βρετανία.", answer: "The worst predictions suggest there could be a new ice age in Great Britain." },
+  { question: "Ακούγεται τρομακτικό!", answer: "Whoa, that sounds frightening!" },
+  { question: "Ίσως η Μεγάλη Βρετανία γίνει το νέο κέντρο των χειμερινών σπορ!", answer: "Well, perhaps Great Britain will become a new center for the winter sports!" },
+  { question: "Ίσως οι Χειμερινοί Ολυμπιακοί Αγώνες να διεξαχθούν στη Σκωτία!", answer: "Perhaps the Winter Olympic Games will take place in Scotland!" },
+  { question: "Θα πρέπει να περιμένουμε και να δούμε.", answer: "We'll have to wait and see." },
+  { question: "Ευχαριστούμε τη Σούζαν Φέρλι.", answer: "Thanks to Susan Furley." }
+]
+
+;
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>
