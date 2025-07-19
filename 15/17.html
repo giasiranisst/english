@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flashcard App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+.flashcard {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 400px;                  /* παίρνει όσο χώρο χρειάζεται */
+            /* αλλά όχι πάνω από 90% πλάτος */
+  height: 500px;                 /* προσαρμόζεται στο περιεχόμενο */
+           /* περιορίζει το ύψος */
+              /* αν ξεπεράσει, δείχνει scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.6s;
+  perspective: 1000px;
+  position: relative;
+  box-sizing: border-box;       /* padding μέσα στα όρια */
+}
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .flashcard-front {
+      background: #4a90e2;
+      color: white;
+    }
+    .flashcard-back {
+      background: #e2f0fb;
+      color: #333;
+      transform: rotateY(180deg);
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+	
+	  .counter {
+    font-size: 16px;
+    margin-bottom: 20px;
+	text-align: right;
+  }
+  
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+
+  
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="flashcard-front">Question</div>
+        <div class="flashcard-back" id="flashcard-back">Answer</div>
+      </div>
+    </div>
+		  <div class="counter" id="counter">1 / 1</div>
+    <div class="controls">
+      <button id="prevBtn">Previous</button>
+      <button id="flipBtn">Flip</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+  </div>
+
+<script>
+  const flashcards = [
+  { question: "Είναι το νέο σύνορο του λιανικού εμπορίου.", answer: "It's the new frontier of retailing." },
+  { question: "Έχει φέρει επανάσταση στον τρόπο που κάνουμε δουλειές.", answer: "It's revolutionized the way we do business." },
+  { question: "Και φέρνει πελάτες από όλο τον κόσμο.", answer: "And it brings in customers from all over the world." },
+  { question: "Φυσικά μιλάω για το ηλεκτρονικό εμπόριο.", answer: "Of course I'm talking about eCommerce." },
+  { question: "Είμαι ο Έρικ Μπράουν και αυτή είναι η εκπομπή Let's Talk.", answer: "I'm Eric Brown and this is Let's Talk." },
+  { question: "Η συζήτηση μας με τους σχολιαστές Τομ και Μαρί.", answer: "The discussion program with our commentators Tom and Marie." },
+  { question: "Καλησπέρα σε όλους.", answer: "Good evening everyone." },
+  { question: "Καλησπέρα.", answer: "Good evening." },
+  { question: "Ποιες είναι οι απόψεις σας για το ηλεκτρονικό εμπόριο; Ψωνίζετε online;", answer: "What are your thoughts on eCommerce? Do you buy things online?" },
+  { question: "Φυσικά! Κλείνω πάντα φτηνές πτήσεις και αγοράζω DVD και βιβλία στο διαδίκτυο.", answer: "Of course I do. I always book low-cost flights and I also buy DVDs and books on the internet." },
+  { question: "Όπως οι περισσότεροι, ψωνίζω online όχι μόνο για την ευκολία αλλά και για τη χαμηλότερη δυνατή τιμή.", answer: "As most people do, I shop online not only for the convenience but also to pay the lowest price possible on any given item." },
+  { question: "Παλιά επισκεπτόμουν διάφορα site για να βρω την καλύτερη τιμή, αλλά τώρα ο browser μου δείχνει αυτόματα τις τιμές από διαφορετικά online καταστήματα.", answer: "I used to visit different websites to shop around for the lowest price, but now my browser automatically shows me the prices for the same DVD at different online stores." },
+  { question: "Μπορώ εύκολα να συγκρίνω τιμές και να διαλέξω από πού να αγοράσω.", answer: "On the web I can easily compare prices and choose which one to buy." },
+  { question: "Μαρί, ξέρεις ότι είσαι μια τυπική online αγοραστής;", answer: "Marie, did you know that you're a typical online shopper?" },
+  { question: "Στην πραγματικότητα, το 52% των online αγοραστών αγοράζει βιβλία, το 41% είδη ψυχαγωγίας και ταξιδιών και το 40% DVDs και CDs.", answer: "In fact, 52% of online shoppers buy books, 41% buy leisure and travel items including holidays and flights, and 40% buy DVDs and CDs." },
+  { question: "Το online shopping είναι πολύ δημοφιλές σήμερα στο Ηνωμένο Βασίλειο.", answer: "Online shopping is very popular today in the UK." },
+  { question: "Το 48% των ανθρώπων ψωνίζει τακτικά στο διαδίκτυο.", answer: "48% of people regularly shop on the internet." },
+  { question: "Οι οικονομολόγοι εκτιμούν την αξία του ηλεκτρονικού εμπορίου στο Ηνωμένο Βασίλειο στα 2,26 δισεκατομμύρια λίρες.", answer: "Economists put the value of online shopping in the UK at 2.26 billion pounds." },
+  { question: "Η αγορά e-retail αυξάνεται κατά 32% ετησίως.", answer: "And that the e-retail market is growing by 32% a year." },
+  { question: "Δεν με εκπλήσσει καθόλου.", answer: "Actually that doesn't surprise me." },
+  { question: "Το ηλεκτρονικό εμπόριο έχει τεράστιο αντίκτυπο στον τρόπο που κάνουμε δουλειές.", answer: "E-commerce is having a huge impact on the way we do business." },
+  { question: "Αυξάνει τις αγορές, βελτιώνει την αποδοτικότητα και μεταμορφώνει τις επιχειρησιακές διαδικασίες.", answer: "It's increasing markets, improving efficiency and effectiveness, and is transforming business processes." },
+  { question: "Τομ, γιατί είσαι τόσο σιωπηλός; Ποια είναι η γνώμη σου;", answer: "Tom, why are you so quiet? What do you think about eCommerce?" },
+  { question: "Για να πω την αλήθεια, είμαι πολύ σκεπτικός για το ηλεκτρονικό εμπόριο για πολλούς λόγους.", answer: "To tell you the truth, I'm very skeptical about e-commerce for many reasons." },
+  { question: "Γιατί είσαι σκεπτικός;", answer: "Why exactly are you skeptical?" },
+  { question: "Ας ξεκινήσουμε με το θέμα της ασφάλειας. Τα στοιχεία πιστωτικών καρτών μπορεί να κλαπούν.", answer: "Let's start with the issue of security. Credit card details can be stolen." },
+  { question: "Είναι δυνατόν να παραγγείλεις από ψεύτικες εταιρείες που δεν υπάρχουν.", answer: "And it's possible to order goods from bogus companies—ones that don't really exist." },
+  { question: "Υπάρχουν επίσης πολλές απάτες που ξεγελούν τους ανθρώπους για να αποκαλύψουν τα στοιχεία εισόδου τους στο online banking.", answer: "There are also lots of scams to trick people into handing over their login details for online banking." },
+  { question: "Και μετά αδειάζουν τους λογαριασμούς τους.", answer: "And then their accounts are emptied." },
+  { question: "Δηλαδή το online shopping είναι επικίνδυνο;", answer: "So according to you, buying things online is risky?" },
+  { question: "Ναι. Επίσης, δεν είσαι σίγουρος ότι θα πάρεις αυτό που παρήγγειλες και αν κάτι είναι λάθος, ποιος πληρώνει τα έξοδα επιστροφής; Εσύ.", answer: "Yes. Also, you can't be sure you'll get the goods you ordered and if there's something wrong with them, who pays for the return? You do." },
+  { question: "Τομ, συμφωνώ μαζί σου, αλλά μέχρι ενός σημείου.", answer: "Tom, I agree with you, but up to a certain point." },
+  { question: "Υπάρχουν προβλήματα με το ηλεκτρονικό εμπόριο, αλλά αυτά δεν εμποδίζουν τον κόσμο να ξοδεύει όλο και περισσότερα online.", answer: "There are some problems with e-commerce, but these problems aren't stopping people from spending more and more online." },
+  { question: "Ταυτόχρονα, το ηλεκτρονικό εμπόριο έχει πολλά πλεονεκτήματα για τους επιχειρηματίες.", answer: "At the same time, eCommerce has many advantages for business people." },
+  { question: "Μπορείς να εξηγήσεις μερικά από αυτά τα πλεονεκτήματα, Μαρί;", answer: "Well, could you explain some of these advantages, Marie?" },
+  { question: "Είναι φθηνότερο για έναν έμπορο να δημιουργήσει μια ιστοσελίδα από το να νοικιάσει κατάστημα και να πληρώνει υπαλλήλους.", answer: "It's cheaper for a retailer to set up a website than it is to rent a shop, fit it out and pay someone to work there." },
+  { question: "Επιπλέον, μια ιστοσελίδα έχει παγκόσμια εμβέλεια. Οι πελάτες μπορούν να έρθουν από όλο τον κόσμο.", answer: "Besides, a website has global reach—so customers can come from all over the world." },
+  { question: "Εντάξει, εντάξει. Μια ενδιαφέρουσα συζήτηση, αλλά δυστυχώς τελειώνει ο χρόνος μας.", answer: "Okay, okay. An interesting discussion, but I'm afraid yet again we've run out of time." },
+  { question: "Θα ήθελα να ευχαριστήσω τους σχολιαστές μας.", answer: "Once again I'd like to thank our commentators." },
+  { question: "Ευχαριστώ.", answer: "Thank you." },
+  { question: "Και αντίο σε όλους. Τα λέμε ξανά την επόμενη εβδομάδα.", answer: "And goodbye to everyone, and see you again next week." }
+]
+
+;
+
+
+  let currentIndex = 0;
+  const flashcard = document.getElementById('flashcard');
+  const front = document.getElementById('flashcard-front');
+  const back = document.getElementById('flashcard-back');
+  const flipBtn = document.getElementById('flipBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+  function updateFlashcard() {
+    flashcard.classList.remove('flipped');
+    front.textContent = flashcards[currentIndex].question;
+    back.innerHTML = flashcards[currentIndex].answer;
+	counter.textContent = `${currentIndex + 1} / ${flashcards.length}`;
+  }
+
+  flipBtn.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+
+  flashcard.addEventListener('click', () => {
+    flashcard.classList.toggle('flipped');
+  });
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateFlashcard();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < flashcards.length - 1) {
+      currentIndex++;
+      updateFlashcard();
+    }
+  });
+
+  // Initialize the first flashcard
+  updateFlashcard();
+</script>
+
+</body>
+</html>
